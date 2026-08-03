@@ -23,12 +23,13 @@
 #error YRPS_ID should be defined by compilation command (using yrps-shortgit.sh)
 #endif
 
+#define _GNU_SOURCE 1
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <dlfcn.h>
-
+#include <assert.h>
 extern int yrps_argc;
 extern char *const *yrps_argv;
 extern void *yrps_proghdl;
