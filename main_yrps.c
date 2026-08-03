@@ -35,6 +35,17 @@ handle_two_arguments_yrps (const char **argv)
       printf ("\t see github.com/bstarynk/yarefpersys\n");
       exit (EXIT_SUCCESS);
     }
+  else if (!strcmp (argv[1], "--help"))
+    {
+      printf ("%s usage (from %s:%d):\n", argv[0], __FILE__, __LINE__);
+      printf ("\t --version              # gives version information\n");
+      printf ("\t --help                 # gives this help\n");
+      printf ("\t see refpersys.org and github.com/RefPerSys\n");
+      printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
+	      __FILE__, __LINE__-1);
+#warning incomplete --help code
+      exit (EXIT_SUCCESS);
+    }
 }				/* end handle_two_arguments_yrps */
 
 int
@@ -43,6 +54,8 @@ main (int argc, char **argv)
   yrps_argc = argc;
   yrps_argv = argv;
   yrps_proghdl = dlopen (NULL, RTLD_NOW);
+  assert (yrps_proghdl != NULL);
+  assert (argc > 0);
   if (argc == 2)
     handle_two_arguments_yrps ((const char **) argv);
   return 0;
