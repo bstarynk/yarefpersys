@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
+#include <curl/curl.h>
 #include <dlfcn.h>
 #include <assert.h>
 extern int yrps_argc;

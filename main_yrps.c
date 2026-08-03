@@ -32,6 +32,7 @@ handle_two_arguments_yrps (const char **argv)
   if (!strcmp (argv[1], "--version"))
     {
       printf ("%s version id %s\n", argv[0], main_yrps_id);
+      printf ("\t curl version is %s\n", curl_version());
       printf ("\t see github.com/bstarynk/yarefpersys\n");
       exit (EXIT_SUCCESS);
     }

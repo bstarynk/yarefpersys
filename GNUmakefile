@@ -12,7 +12,7 @@ OBJECTS= main_yrps.o
 all: yarefpersys
 
 yarefpersys: $(OBJECTS)
-	$(CC) -UYRPS_LINK $(OBJECTS) -o $@ -ldl -lreadline
+	$(CC) -UYRPS_LINK $(OBJECTS) -o $@ -lcurl -ldl -lreadline
 
 %.o: %.c yrps.h
 	$(CC) -c $(CFLAGS)   -o $@ $<
