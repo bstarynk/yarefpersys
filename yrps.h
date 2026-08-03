@@ -27,8 +27,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
+#include <dlfcn.h>
 
 extern int yrps_argc;
-extern char** yrps_argv;
-
+extern char *const *yrps_argv;
+extern void *yrps_proghdl;
 #endif //YRPS_INCLUDED

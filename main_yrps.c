@@ -23,14 +23,28 @@ const char main_yrps_id[] = YRPS_ID;
 
 
 int yrps_argc;
-char** yrps_argv;
+char *const *yrps_argv;
+void *yrps_proghdl;
 
+static void
+handle_two_arguments_yrps (const char **argv)
+{
+  if (!strcmp (argv[1], "--version"))
+    {
+      printf ("%s version id %s\n", argv[0], main_yrps_id);
+      printf ("\t see github.com/bstarynk/yarefpersys\n");
+      exit (EXIT_SUCCESS);
+    }
+}				/* end handle_two_arguments_yrps */
 
 int
-main(int argc, char**argv)
+main (int argc, char **argv)
 {
   yrps_argc = argc;
   yrps_argv = argv;
+  yrps_proghdl = dlopen (NULL, RTLD_NOW);
+  if (argc == 2)
+    handle_two_arguments_yrps ((const char **) argv);
   return 0;
-#warning empty main 
-} /* end of main */
+#warning nearly empty main
+}				/* end of main */
