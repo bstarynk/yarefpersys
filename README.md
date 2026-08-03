@@ -1,2 +1,2 @@
 # yarefpersys
-Yet Another Reflexive PerSistent System
+Yet Another Reflexive Persistent System
