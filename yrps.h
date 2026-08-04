@@ -27,11 +27,22 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <readline/readline.h>
 #include <curl/curl.h>
 #include <dlfcn.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#ifndef YRPS_PATHMAX
+#define YRPS_PATHMAX 384
+#endif /*YRPS_PATHMAX */
 extern int yrps_argc;
 extern char *const *yrps_argv;
 extern void *yrps_proghdl;
+extern char yrps_dirpath[YRPS_PATHMAX];
+
+extern bool yrps_readable_directory (const char *);
+
 #endif //YRPS_INCLUDED
