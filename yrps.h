@@ -72,8 +72,12 @@ extern char yrps_dirpath[YRPS_PATHMAX];
 /*€ vérifie qu'un repertoire est lisible et convenable */
 extern bool yrps_readable_directory (const char *dirpath);
 
-// check that a file is textual, no more than YRPS_LINECOUNTMAX lines &
+// Check that a file is textual, no more than YRPS_LINECOUNTMAX lines &
 // YRPS_LINEWIDTHMAX bytes per line, each line being UTF8
 // on error stderr gets a message
+/*€ Vérifie qu'un fichier textuel est correct: pas plus de
+  YRPS_LINECOUNTMAX lignes, chacune encodée UTF8 et ayant au plus
+  YRPS_LINEWIDTHMAX octets; en cas d'erreur la sort d'erreur affiche
+  un message */
 extern bool yrps_check_valid_textual_file (const char *path);
 #endif //YRPS_INCLUDED
