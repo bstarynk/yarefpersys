@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistr.h> 
 #include <readline/readline.h>
 #include <curl/curl.h>
 #include <dlfcn.h>
@@ -38,11 +39,25 @@
 #ifndef YRPS_PATHMAX
 #define YRPS_PATHMAX 384
 #endif /*YRPS_PATHMAX */
+
+#ifndef YRPS_LINEWIDTHMAX
+#define YRPS_LINEWITHMAX 256
+#endif
+
+#ifndef YRPS_LINECOUNTMAX
+#define YRPS_LINECOUNTMAX 4096
+#endif
+
 extern int yrps_argc;
 extern char *const *yrps_argv;
 extern void *yrps_proghdl;
 extern char yrps_dirpath[YRPS_PATHMAX];
 
-extern bool yrps_readable_directory (const char *);
+// check that a directory is readable
+extern bool yrps_readable_directory (const char *dirpath);
 
+// check that a file is textual, no more than YRPS_LINECOUNTMAX lines &
+// YRPS_LINEWIDTHMAX bytes per line, each line being UTF8
+// on error stderr gets a message
+extern bool yrps_check_valid_textual_file(const char*path);
 #endif //YRPS_INCLUDED

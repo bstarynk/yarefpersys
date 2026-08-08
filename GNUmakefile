@@ -7,12 +7,12 @@ CFLAGS ?= -Wall -Wextra -O -g
 CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\"
 .PHONY: all clean
 
-OBJECTS= main_yrps.o
+OBJECTS= main_yrps.o parse_yrps.o
 
 all: yarefpersys
 
 yarefpersys: $(OBJECTS)
-	$(CC) -UYRPS_LINK $(OBJECTS) -o $@ -lcurl -ldl -lreadline
+	$(CC) -UYRPS_LINK $(OBJECTS) -o $@ -lunistring -lcurl -ldl -lreadline
 
 %.o: %.c yrps.h
 	$(CC) -c $(CFLAGS)   -o $@ $<
