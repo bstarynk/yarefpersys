@@ -22,44 +22,45 @@
 const char parse_yrps_id[] = YRPS_ID;
 
 bool
-yrps_check_valid_textual_file(const char*path)
+yrps_check_valid_textual_file (const char *path)
 {
   char linebuf[256];
   int linecnt = 0;
-  const char* reason = "?";
-  memset(linebuf, 0, sizeof(linebuf));
+  const char *reason = "?";
+  memset (linebuf, 0, sizeof (linebuf));
   if (!path || !path[0])
     return false;
-  FILE *f = fopen(path, "r");
+  FILE *f = fopen (path, "r");
   int errline = 0;
   if (!f)
     goto failure;
-  do {
-    linecnt++;
-    if (linecnt>YRPS_LINECOUNTMAX)
-      {
-	reason = "too many lines";
-	errline = __LINE__-2;
-	goto failure;
-      };
-    if (!fgets(linebuf, (int)sizeof(linebuf), f))
-      {
-	reason = "fget failed";
-	errline = __LINE__-2;
-	goto failure;
-      };
-    if (u8_check((uint8_t*)linebuf, sizeof(linebuf)))
-      {
-	reason = "bad utf8 unicode";
-	errline = __LINE__-2;
-	goto failure;
-      };
-  } while (!feof(f));
- failure:
-  if (errline>0)
-    fprintf(stderr, "%s: %s failed on %s line %s:%d (%s)\n",
-	    yrps_argv[0], __FUNCTION__,
-	    path, __FILE__, errline, reason);
-  fclose(f);
+  do
+    {
+      linecnt++;
+      if (linecnt > YRPS_LINECOUNTMAX)
+	{
+	  reason = "too many lines";
+	  errline = __LINE__ - 2;
+	  goto failure;
+	};
+      if (!fgets (linebuf, (int) sizeof (linebuf), f))
+	{
+	  reason = "fgets failed";
+	  errline = __LINE__ - 2;
+	  goto failure;
+	};
+      if (u8_check ((uint8_t *) linebuf, sizeof (linebuf)))
+	{
+	  reason = "bad utf8 unicode";
+	  errline = __LINE__ - 2;
+	  goto failure;
+	};
+    }
+  while (!feof (f));
+failure:
+  if (errline > 0)
+    fprintf (stderr, "%s: %s failed on %s line %s:%d (%s)\n",
+	     yrps_argv[0], __FUNCTION__, path, __FILE__, errline, reason);
+  fclose (f);
   return false;
-} /* end yrps_check_valid_textual_file */
+}				/* end yrps_check_valid_textual_file */
