@@ -84,7 +84,7 @@ main (int argc, char **argv)
   assert (argc > 0);
   if (argc == 2)
     handle_two_arguments_yrps ((const char **) argv);
-  yrps_load_state_from_directory(yrps_dirpath);
+  yrps_load_state_from_directory (yrps_dirpath);
   return 0;
 #warning nearly empty main
 }				/* end of main */

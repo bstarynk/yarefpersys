@@ -71,6 +71,7 @@ extern char *const *yrps_argv;
 /*€ poignée vers le programme tout entier (dlopen) */
 extern void *yrps_proghdl;
 
+// self program base 
 // self code and/or data directory path
 /*€ le repertoire contenant le source et/ou les données textuelles */
 extern char yrps_dirpath[YRPS_PATHMAX];
@@ -81,17 +82,17 @@ extern bool yrps_readable_directory (const char *dirpath);
 
 // Check that a file is textual, no more than YRPS_LINECOUNTMAX lines &
 // YRPS_LINEWIDTHMAX bytes per line, each line being UTF8
-// on error stderr gets a message
+// on error stderr gets a message and returns false
 /*€ Vérifie qu'un fichier textuel est correct: pas plus de
   YRPS_LINECOUNTMAX lignes, chacune encodée UTF8 et ayant au plus
   YRPS_LINEWIDTHMAX octets; en cas d'erreur la sort d'erreur affiche
-  un message */
+  un message et renvoie faux */
 extern bool yrps_check_valid_textual_file (const char *path);
 
 // Signature of initialization functions named <NAME>_inityrps
 /*€ signature des fonctions d'initialisation <NOM>_inityrps*/
-typedef void yrps_initfun_t(void);
+typedef void yrps_initfun_t (void);
 // Load the state from directory
 /*€ charge l'état depuis le repertoire indiqué */
-extern void yrps_load_state_from_directory(const char*dirpath);
+extern void yrps_load_state_from_directory (const char *dirpath);
 #endif //YRPS_INCLUDED
