@@ -37,11 +37,12 @@ yrps_check_valid_textual_file (const char *path)
     return false;
   FILE *f = fopen (path, "r");
   int errline = 0;
-  if (!f) {
-    reason = "fopen failed";
-    errline = __LINE__ - 2;
-    goto failure;
-  }
+  if (!f)
+    {
+      reason = "fopen failed";
+      errline = __LINE__ - 2;
+      goto failure;
+    }
   do
     {
       linecnt++;
@@ -147,7 +148,16 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
     }
   char symbuf[YRPS_SYMLENMAX];
   memset (symbuf, 0, sizeof (symbuf));
-  snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", entnam);
+  char *endrps = strstr (entnam, "_yrps");
+  if (endrps)
+    {
+      strncpy (symbuf, entnam, endrps - entnam);
+      assert (strlen (symbuf) + sizeof ("_inityrps") < sizeof (symbuf));
+      strcat (symbuf, "_inityrps");
+      assert (strlen (symbuf) < sizeof (symbuf));
+    }
+  else
+    snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", entnam);
   void *ad = dlsym (dlh, symbuf);
   if (ad)
     {
