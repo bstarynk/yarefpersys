@@ -11,3 +11,9 @@ _pseudo_inityrps(void)
 #pragma message "compiling _pseudo_inityrps"
   fflush(NULL);
 }
+struct yrps_intvec_st yrps_v10 =
+  {
+    .vkind = Kyrps_intvect,
+    .vlen = 3,
+    .v_intvec = { -1, 2, 3}
+  };

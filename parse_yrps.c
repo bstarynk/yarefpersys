@@ -26,10 +26,10 @@ static void load_initial_module_yrps (const char *dirpath,
 static void parse_generated_c_file_yrps (const char *dirpath,
 					 const char *entnam);
 
-static struct yrps_value_st**valvec_yrps;
+static struct yrps_value_st **valvec_yrps;
 static int sizvalvec_yrps, lenvalvec_yrps;
 
-static int add_value_yrps(struct yrps_value_st*);
+static int add_value_yrps (struct yrps_value_st *);
 
 bool
 yrps_check_valid_textual_file (const char *path)
@@ -181,15 +181,44 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
   snprintf (bufpath, sizeof (bufpath), "%s/%s", dirpath, entnam);
   if (yrps_check_valid_textual_file (bufpath))
     return;
+  FILE *f = fopen (bufpath, "r");
+  do
+    {
+      char linbuf[YRPS_LINEWIDTHMAX];
+      memset (linbuf, 0, sizeof (linbuf));
+      if (!fgets (linbuf, sizeof (linbuf), f))
+	break;
+      int i = 0;
+      int p = -1;
+      char typbuf[16];
+      memset (typbuf, 0, sizeof (typbuf));
+      if (sscanf
+	  (linbuf, " struct yrps_%10[a-z]_st yrps_v%d =%n", typbuf, &i,
+	   &p) > 2 && p > 0 && i > 0)
+	{
+#warning should have an hash table and call add_value_yrps
+	  (void) add_value_yrps;
+	}
+    }
+  while (!feof (f));
+  fclose (f);
 #warning incomplete parse_generated_c_path_yrps
 }
 
 int
-add_value_yrps(struct yrps_value_st*v)
+add_value_yrps (struct yrps_value_st *v)
 {
-  assert(v);
-  if (lenvalvec_yrps >= sizvalvec_yrps) {
-    int newsiz = ((3*lenvalvec_yrps/2+10) &0x1f) + 1;
-    assert (newsiz > sizvalvec_yrps);
-  }
-}
+  assert (v);
+  if (lenvalvec_yrps >= sizvalvec_yrps)
+    {
+      int newsiz = ((3 * lenvalvec_yrps / 2 + 10) & 0x1f) + 1;
+      assert (newsiz > sizvalvec_yrps);
+      struct yrps_value_st **oldvec = valvec_yrps;
+      valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
+      if (oldvec)
+	memcpy (valvec_yrps, oldvec,
+		lenvalvec_yrps * sizeof (struct yrps_value_st *));
+      free (oldvec);
+    };
+  valvec_yrps[lenvalvec_yrps++] = v;
+}				/* end add_value_yrps */
