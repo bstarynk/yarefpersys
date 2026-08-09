@@ -4,7 +4,7 @@ CC ?= gcc
 RM ?= rm -vf
 YRPS_SHORTGIT := $(shell ./yrps-shortgit.sh)
 CFLAGS ?= -Wall -Wextra -O -g
-CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\"
+CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\" -DYRPS_SRCDIR=\"$(realpath .)\"
 .PHONY: all clean
 
 OBJECTS= main_yrps.o parse_yrps.o
