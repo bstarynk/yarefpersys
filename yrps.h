@@ -54,7 +54,7 @@
 // maximal width in bytes 
 #ifndef YRPS_LINEWIDTHMAX
 /*€ longueur max (octets) d'une ligne de fichier */
-#define YRPS_LINEWITHMAX 256
+#define YRPS_LINEWIDTHMAX 256
 #endif
 
 // maximal number of lines in any textual files, including C files
