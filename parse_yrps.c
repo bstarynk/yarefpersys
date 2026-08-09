@@ -64,3 +64,58 @@ failure:
   fclose (f);
   return false;
 }				/* end yrps_check_valid_textual_file */
+
+void
+yrps_load_state_from_directory (const char *dirpath)
+{
+  assert (yrps_readable_directory (dirpath));
+  size_t dirpathlen = strlen (dirpath);
+  struct dirent *dent = NULL;
+  DIR *dir = opendir (dirpath);
+  do
+    {
+      dent = readdir (dir);
+      if (!dent)
+	break;
+      if (dent->d_type != DT_REG)
+	continue;
+      if (dent->d_name[0] == '.')
+	continue;
+      int namlen = strlen (dent->d_name);
+      // A loadable module like abc.so or _xy*.so is dlopened and its
+      // initialization function run (e.g. abc_inityrps) if it exists.
+      /*€ Un module chargeable tel que abc.so ou _xy.so est chargé
+         dynamiquement par dlopen et sa fonction d'initialisation
+         (e.g. abc_inityrps) executée */
+      if (namlen > 4 && namlen + dirpathlen + 1 < YRPS_PATHMAX
+	  && namlen < YRPS_SYMLENMAX
+	  && (isalnum (dent->d_name[0]) || dent->d_name[0] == '_')
+	  && dent->d_name[namlen - 3] == '.'
+	  && dent->d_name[namlen - 2] == 's'
+	  && dent->d_name[namlen - 1] == 'o')
+	{
+	  char bufpath[YRPS_PATHMAX];
+	  memset (bufpath, 0, sizeof (bufpath));
+	  snprintf (bufpath, sizeof (bufpath), "%s/%s",
+		    dirpath, dent->d_name);
+	  void *dlh = dlopen (bufpath, RTLD_NOW);
+	  if (!dlh)
+	    {
+	      fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)\n",
+		       yrps_argv[0], __FUNCTION__, bufpath,
+		       __FILE__, __LINE__ - 2, dlerror ());
+	      continue;
+	    }
+	  char symbuf[YRPS_SYMLENMAX];
+	  memset (symbuf, 0, sizeof (symbuf));
+	  snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", dent->d_name);
+	  void *ad = dlsym (dlh, symbuf);
+	  if (ad)
+	    {
+	      yrps_initfun_t *inif = (yrps_initfun_t *) ad;
+	      (*inif) ();
+	    };
+	}
+    }
+  while (dent);
+}				/* end yrps_load_state_from_directory */

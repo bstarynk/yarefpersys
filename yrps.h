@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistr.h>
+#include <dirent.h>
 #include <readline/readline.h>
 #include <curl/curl.h>
 #include <dlfcn.h>
@@ -41,6 +42,12 @@
 /*€ longueur maximale des noms de fichiers */
 #define YRPS_PATHMAX 384
 #endif /*YRPS_PATHMAX */
+
+/// maximal symbol name length in bytes
+#ifndef YRPS_SYMLENMAX
+/*€ longueur maximale des noms de fichiers */
+#define YRPS_SYMLENMAX 32
+#endif /*YRPS_SYMLENMAX */
 
 // maximal width in bytes 
 #ifndef YRPS_LINEWIDTHMAX
@@ -80,4 +87,11 @@ extern bool yrps_readable_directory (const char *dirpath);
   YRPS_LINEWIDTHMAX octets; en cas d'erreur la sort d'erreur affiche
   un message */
 extern bool yrps_check_valid_textual_file (const char *path);
+
+// Signature of initialization functions named <NAME>_inityrps
+/*€ signature des fonctions d'initialisation <NOM>_inityrps*/
+typedef void yrps_initfun_t(void);
+// Load the state from directory
+/*€ charge l'état depuis le repertoire indiqué */
+extern void yrps_load_state_from_directory(const char*dirpath);
 #endif //YRPS_INCLUDED

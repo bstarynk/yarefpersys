@@ -25,7 +25,7 @@ const char main_yrps_id[] = YRPS_ID;
 int yrps_argc;
 char *const *yrps_argv;
 void *yrps_proghdl;
-char yrps_dirpath[YRPS_PATHMAX];
+char yrps_dirpath[YRPS_PATHMAX] = YRPS_SRCDIR;
 
 
 bool
@@ -84,6 +84,7 @@ main (int argc, char **argv)
   assert (argc > 0);
   if (argc == 2)
     handle_two_arguments_yrps ((const char **) argv);
+  yrps_load_state_from_directory(yrps_dirpath);
   return 0;
 #warning nearly empty main
 }				/* end of main */
