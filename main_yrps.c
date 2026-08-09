@@ -74,6 +74,48 @@ handle_two_arguments_yrps (const char **argv)
     }
 }				/* end handle_two_arguments_yrps */
 
+void
+yrps_fail_at (const char *fil, int lin)
+{
+  fprintf (stderr, "%s failing at %s:%d (git %s)\n",
+	   yrps_argv[0], fil, lin, YRPS_ID);
+  fflush (NULL);
+  abort ();
+}				/* end yrps_fail_at */
+
+
+void *
+yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin)
+{
+  if (nbelem < 0)
+    return NULL;
+  if (size == 0)
+    return NULL;
+  void *p = calloc (nbelem, size);
+  if (!p)
+    {
+      fprintf (stderr, "%s calloc failed at %s:%d (%s)\n",
+	       yrps_argv[0], fil, lin, strerror (errno));
+      YRPS_FAIL ();
+    };
+  return p;
+}				/* end yrps_calloc_at */
+
+void *
+yrps_malloc_at (unsigned size, const char *fil, int lin)
+{
+  if (size == 0)
+    return NULL;
+  void *p = calloc (1, size);
+  if (!p)
+    {
+      fprintf (stderr, "%s malloc failed at %s:%d (%s)\n",
+	       yrps_argv[0], fil, lin, strerror (errno));
+      YRPS_FAIL ();
+    };
+  return p;
+}				/* end yrps_malloc_at */
+
 int
 main (int argc, char **argv)
 {

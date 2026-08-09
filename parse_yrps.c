@@ -26,6 +26,11 @@ static void load_initial_module_yrps (const char *dirpath,
 static void parse_generated_c_file_yrps (const char *dirpath,
 					 const char *entnam);
 
+static struct yrps_value_st**valvec_yrps;
+static int sizvalvec_yrps, lenvalvec_yrps;
+
+static int add_value_yrps(struct yrps_value_st*);
+
 bool
 yrps_check_valid_textual_file (const char *path)
 {
@@ -177,4 +182,14 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
   if (yrps_check_valid_textual_file (bufpath))
     return;
 #warning incomplete parse_generated_c_path_yrps
+}
+
+int
+add_value_yrps(struct yrps_value_st*v)
+{
+  assert(v);
+  if (lenvalvec_yrps >= sizvalvec_yrps) {
+    int newsiz = ((3*lenvalvec_yrps/2+10) &0x1f) + 1;
+    assert (newsiz > sizvalvec_yrps);
+  }
 }
