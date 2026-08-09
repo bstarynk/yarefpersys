@@ -23,6 +23,8 @@ const char parse_yrps_id[] = YRPS_ID;
 
 static void load_initial_module_yrps (const char *dirpath,
 				      const char *entnam);
+static void parse_generated_c_file_yrps (const char *dirpath,
+					 const char *entnam);
 
 bool
 yrps_check_valid_textual_file (const char *path)
@@ -35,8 +37,11 @@ yrps_check_valid_textual_file (const char *path)
     return false;
   FILE *f = fopen (path, "r");
   int errline = 0;
-  if (!f)
+  if (!f) {
+    reason = "fopen failed";
+    errline = __LINE__ - 2;
     goto failure;
+  }
   do
     {
       linecnt++;
@@ -46,8 +51,11 @@ yrps_check_valid_textual_file (const char *path)
 	  errline = __LINE__ - 2;
 	  goto failure;
 	};
+      memset (linebuf, 0, sizeof (linebuf));
       if (!fgets (linebuf, (int) sizeof (linebuf), f))
 	{
+	  if (feof (f))
+	    break;
 	  reason = "fgets failed";
 	  errline = __LINE__ - 2;
 	  goto failure;
@@ -60,11 +68,15 @@ yrps_check_valid_textual_file (const char *path)
 	};
     }
   while (!feof (f));
+  assert (linecnt > 0);
+  return true;
 failure:
   if (errline > 0)
-    fprintf (stderr, "%s: %s failed on %s line %s:%d (%s)\n",
-	     yrps_argv[0], __FUNCTION__, path, __FILE__, errline, reason);
+    fprintf (stderr, "%s: %s failed on %s line %s:%d (%s @ %s:%d)\n",
+	     yrps_argv[0], __FUNCTION__, path, __FILE__, errline, reason,
+	     path, linecnt);
   fclose (f);
+  fflush (NULL);
   return false;
 }				/* end yrps_check_valid_textual_file */
 
@@ -72,6 +84,8 @@ void
 yrps_load_state_from_directory (const char *dirpath)
 {
   assert (yrps_readable_directory (dirpath));
+  char *lastselfslash = strrchr (yrps_argv[0], '/');
+  const char *selfname = lastselfslash ? (lastselfslash + 1) : yrps_argv[0];
   size_t dirpathlen = strlen (dirpath);
   struct dirent *dent = NULL;
   DIR *dir = opendir (dirpath);
@@ -84,9 +98,15 @@ yrps_load_state_from_directory (const char *dirpath)
 	continue;
       if (dent->d_name[0] == '.')
 	continue;
-      int namlen = strlen (dent->d_name);
+      if (!strcmp (dent->d_name, selfname))
+	continue;
+      int namlen = (int) strlen (dent->d_name);
+      if (namlen > 3 && dent->d_name[namlen - 1] == 'o'
+	  && dent->d_name[namlen - 2] == '.')
+	continue;
       // A loadable module like abc.so or _xy*.so is dlopened and its
-      // initialization function run (e.g. abc_inityrps) if it exists.
+      // initialization function (e.g. abc_inityrps) is run if it
+      // exists.
       /*€ Un module chargeable tel que abc.so ou _xy.so est chargé
          dynamiquement par dlopen et sa fonction d'initialisation
          (e.g. abc_inityrps) executée */
@@ -98,6 +118,12 @@ yrps_load_state_from_directory (const char *dirpath)
 	  && dent->d_name[namlen - 1] == 'o')
 	{
 	  load_initial_module_yrps (dirpath, dent->d_name);
+	}
+      else if (namlen > 4 && dent->d_name[0] == '_'
+	       && dent->d_name[namlen - 2] == '.'
+	       && dent->d_name[namlen - 1] == 'c')
+	{
+	  parse_generated_c_file_yrps (dirpath, dent->d_name);
 	}
     }
   while (dent);
@@ -129,3 +155,16 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
       (*inif) ();
     };
 }				/* end load_initial_module_yrps */
+
+void
+parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
+{
+  assert (dirpath);
+  assert (entnam);
+  char bufpath[YRPS_PATHMAX];
+  memset (bufpath, 0, sizeof (bufpath));
+  snprintf (bufpath, sizeof (bufpath), "%s/%s", dirpath, entnam);
+  if (yrps_check_valid_textual_file (bufpath))
+    return;
+#warning incomplete parse_generated_c_path_yrps
+}
