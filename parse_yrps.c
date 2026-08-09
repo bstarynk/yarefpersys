@@ -21,6 +21,9 @@
 
 const char parse_yrps_id[] = YRPS_ID;
 
+static void load_initial_module_yrps (const char *dirpath,
+				      const char *entnam);
+
 bool
 yrps_check_valid_textual_file (const char *path)
 {
@@ -94,28 +97,35 @@ yrps_load_state_from_directory (const char *dirpath)
 	  && dent->d_name[namlen - 2] == 's'
 	  && dent->d_name[namlen - 1] == 'o')
 	{
-	  char bufpath[YRPS_PATHMAX];
-	  memset (bufpath, 0, sizeof (bufpath));
-	  snprintf (bufpath, sizeof (bufpath), "%s/%s",
-		    dirpath, dent->d_name);
-	  void *dlh = dlopen (bufpath, RTLD_NOW);
-	  if (!dlh)
-	    {
-	      fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)\n",
-		       yrps_argv[0], __FUNCTION__, bufpath,
-		       __FILE__, __LINE__ - 2, dlerror ());
-	      continue;
-	    }
-	  char symbuf[YRPS_SYMLENMAX];
-	  memset (symbuf, 0, sizeof (symbuf));
-	  snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", dent->d_name);
-	  void *ad = dlsym (dlh, symbuf);
-	  if (ad)
-	    {
-	      yrps_initfun_t *inif = (yrps_initfun_t *) ad;
-	      (*inif) ();
-	    };
+	  load_initial_module_yrps (dirpath, dent->d_name);
 	}
     }
   while (dent);
 }				/* end yrps_load_state_from_directory */
+
+void
+load_initial_module_yrps (const char *dirpath, const char *entnam)
+{
+  assert (dirpath);
+  assert (entnam);
+  char bufpath[YRPS_PATHMAX];
+  memset (bufpath, 0, sizeof (bufpath));
+  snprintf (bufpath, sizeof (bufpath), "%s/%s", dirpath, entnam);
+  void *dlh = dlopen (bufpath, RTLD_NOW);
+  if (!dlh)
+    {
+      fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)\n",
+	       yrps_argv[0], __FUNCTION__, bufpath,
+	       __FILE__, __LINE__ - 2, dlerror ());
+      return;
+    }
+  char symbuf[YRPS_SYMLENMAX];
+  memset (symbuf, 0, sizeof (symbuf));
+  snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", entnam);
+  void *ad = dlsym (dlh, symbuf);
+  if (ad)
+    {
+      yrps_initfun_t *inif = (yrps_initfun_t *) ad;
+      (*inif) ();
+    };
+}				/* end load_initial_module_yrps */
