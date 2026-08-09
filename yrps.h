@@ -51,7 +51,7 @@
 // maximal number of lines in any textual files 
 #ifndef YRPS_LINECOUNTMAX
 /*€ nombre maximum de lignes dans nos fichiers textuels, y compris en C */
-#define YRPS_LINECOUNTMAX 4096
+#define YRPS_LINECOUNTMAX 8192
 #endif
 
 
