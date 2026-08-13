@@ -78,7 +78,7 @@ extern char *const *yrps_argv;
 void *yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin);
 #define YRPS_CALLOC(N,S) yrps_calloc_at((N),(S),__FILE__,__LINE__);
 void *yrps_malloc_at (unsigned size, const char *fil, int lin);
-#define YRPS_MALLOC(S) yrps_malloc_at((N),__FILE__,__LINE__);
+#define YRPS_MALLOC(S) yrps_malloc_at((S),__FILE__,__LINE__);
 
 void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 #define YRPS_FAIL() yrps_fail_at(__FILE__,__LINE__);
@@ -93,6 +93,9 @@ enum yrps_kind_en
   Kyrps_dictvect,
   Kyrps_obseq,
   Kyrps_obref,
+  Kyrps_object,
+  Kyrps__Internal,
+  Kyrps_objbucket = Kyrps__Internal /* not a real value, internal */ ,
   Kyrps__Last
 };
 
@@ -103,7 +106,10 @@ struct yrps_pairvect_st;
 #define YRPS_PREFIX_FIELDS			\
   enum yrps_kind_en vkind;			\
   unsigned char vmark;				\
-  short vlen
+  union {					\
+    uint32_t vlen;		       		\
+    uint32_t vflag;				\
+  }
 
 struct yrps_prefix_st
 {
@@ -127,6 +133,13 @@ struct yrps_dblvec_st
   YRPS_PREFIX_FIELDS;
   const double v_dblvec[];
 };
+
+struct yrps_objvec_st
+{
+  YRPS_PREFIX_FIELDS;
+  struct yrps_object_st *v_objvec[];
+};
+
 struct yrps_pairvect_st
 {
   YRPS_PREFIX_FIELDS;
@@ -164,7 +177,7 @@ struct yrps_value_st
 struct yrps_object_st
 {
   YRPS_PREFIX_FIELDS;
-  const int64_t o_id;
+  int64_t o_id;			/* should never be updated */
   pthread_mutex_t o_mtx;
   int32_t o_nbpair;
   int32_t o_nbval;
@@ -174,6 +187,9 @@ struct yrps_object_st
   struct yrps_pairvect_st *o_pairv;	// vector ordered by o_id
   struct yrps_value_st *o_valseq;	//
 };
+
+extern struct yrps_object_st *yrps_make_object (int64_t oid);
+#define YRPS_NEW_OBJECT() yrps_make_object((int64_t)0)
 
 // check that a directory is readable and convenient
 /*€ vérifie qu'un repertoire est lisible et convenable */
@@ -199,4 +215,5 @@ extern void yrps_load_state_from_directory (const char *dirpath);
 // return 0 if not found
 extern int64_t yrps_prime_above (int64_t l);
 extern int64_t yrps_prime_below (int64_t l);
+
 #endif //YRPS_INCLUDED

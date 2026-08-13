@@ -21,4 +21,78 @@
 
 const char obj_yrps_id[] = YRPS_ID;
 
+struct yrps_objbucket_st
+{
+  YRPS_PREFIX_FIELDS;
+  unsigned b_buckcount;
+  struct yrps_object_st *b_objvec[];
+};
+
+
+static struct yrps_objbucket_st **obarr_yrps;
+static int64_t sizobarr_yrps;
+static int64_t cntob_yrps;
+static pthread_mutex_t mtxob_yrps = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+struct yrps_object_st *
+yrps_find_object (int64_t oid)
+{
+  struct yrps_object_st *pob = NULL;
+  struct yrps_objbucket_st *pbucket = NULL;
+  pthread_mutex_lock (&mtxob_yrps);
+  if (!oid)
+    goto end;
+  if (!obarr_yrps)
+    {
+      int64_t newsiz = 31;	/* it is prime */
+      obarr_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_calloc *));
+      sizobarr_yrps = newsiz;
+      assert (cntob_yrps == 0);
+      goto end;
+    };
+  unsigned bucknum = (unsigned) (oid % sizobarr_yrps);
+  pbucket = obarr_yrps[bucknum];
+  if (!pbucket)
+    goto end;
+end:
+  pthread_mutex_unlock (&mtxob_yrps);
+  return pob;
+}				/* end yrps_find_object */
+
+struct yrps_object_st *
+yrps_make_object (int64_t oid)
+{
+  struct yrps_object_st *pob = NULL;
+  struct yrps_objbucket_st *pbucket = NULL;
+  if (oid)
+    {
+      pob = yrps_find_object (oid);
+      if (pob)
+	return pob;
+    };
+  pthread_mutex_lock (&mtxob_yrps);
+  pob = YRPS_MALLOC (sizeof (struct yrps_object_st));
+  pob->vkind = Kyrps_object;
+  pob->o_id = oid;
+  unsigned bucknum = (unsigned) (oid % sizobarr_yrps);
+  pbucket = obarr_yrps[bucknum];
+  if (!pbucket)
+    {
+      unsigned bucksiz = 13;	/* a prime number */
+      pbucket = YRPS_MALLOC (sizeof (struct yrps_objvec_st)
+			     + bucksiz * sizeof (void *));
+      pbucket->vkind = Kyrps_objbucket;
+      pbucket->vlen = bucksiz;
+      pbucket->b_objvec[0] = pob;
+      for (unsigned bix = 1; bix < bucksiz; bix++)
+	pbucket->b_objvec[bix] = NULL;
+    };
+#warning very incomplete  yrps_make_object
+  fprintf (stderr, "incomplete yrps_make_object oid=%ld\n", (long) oid);
+  YRPS_FAIL ();
+end:
+  pthread_mutex_unlock (&mtxob_yrps);
+  return pob;
+}
+
 #warning obj_yrps.c needs a lot of code
