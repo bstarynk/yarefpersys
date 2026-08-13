@@ -63,6 +63,21 @@ handle_two_arguments_yrps (const char **argv)
       printf ("\t see refpersys.org and github.com/RefPerSys\n");
       printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
 	      __FILE__, __LINE__ - 1);
+      printf ("\t °yrps_prefix_st size %d align %d\n",
+	      (int) sizeof (struct yrps_prefix_st),
+	      (int) alignof (struct yrps_prefix_st));
+      printf ("\t °yrps_value_st size %d align %d\n",
+	      (int) sizeof (struct yrps_value_st),
+	      (int) alignof (struct yrps_value_st));
+      printf ("\t °yrps_pairvect_st size %d align %d\n",
+	      (int) sizeof (struct yrps_pairvect_st),
+	      (int) alignof (struct yrps_pairvect_st));
+      printf ("\t °yrps_dictvect_st size %d align %d\n",
+	      (int) sizeof (struct yrps_dictvect_st),
+	      (int) alignof (struct yrps_dictvect_st));
+      printf ("\t °yrps_object_st size %d align %d\n",
+	      (int) sizeof (struct yrps_object_st),
+	      (int) alignof (struct yrps_object_st));
 #warning incomplete --help code
       exit (EXIT_SUCCESS);
     };

@@ -73,6 +73,8 @@
 extern int yrps_argc;
 extern char *const *yrps_argv;
 
+/// memory allocation macros
+/*€ macros d'allocation memoire */
 void *yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin);
 #define YRPS_CALLOC(N,S) yrps_calloc_at((N),(S),__FILE__,__LINE__);
 void *yrps_malloc_at (unsigned size, const char *fil, int lin);
@@ -166,19 +168,12 @@ struct yrps_object_st
   pthread_mutex_t o_mtx;
   int32_t o_nbpair;
   int32_t o_nbval;
+  int32_t o_flags;
+  int32_t o_state;
   void *o_funad;
   struct yrps_pairvect_st *o_pairv;	// vector ordered by o_id
   struct yrps_value_st *o_valseq;	//
 };
-
-// self program handle (dlopen)
-/*€ poignée vers le programme tout entier (dlopen) */
-extern void *yrps_proghdl;
-
-// self program base 
-// self code and/or data directory path
-/*€ le repertoire contenant le source et/ou les données textuelles */
-extern char yrps_dirpath[YRPS_PATHMAX];
 
 // check that a directory is readable and convenient
 /*€ vérifie qu'un repertoire est lisible et convenable */
