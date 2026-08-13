@@ -73,20 +73,22 @@
 extern int yrps_argc;
 extern char *const *yrps_argv;
 
-void*yrps_calloc_at(long nbelem, unsigned size, const char*fil, int lin);
+void *yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin);
 #define YRPS_CALLOC(N,S) yrps_calloc_at((N),(S),__FILE__,__LINE__);
-void*yrps_malloc_at(unsigned size, const char*fil, int lin);
+void *yrps_malloc_at (unsigned size, const char *fil, int lin);
 #define YRPS_MALLOC(S) yrps_malloc_at((N),__FILE__,__LINE__);
 
-void yrps_fail_at(const char*fil, int lin) __attribute__((noreturn));
+void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 #define YRPS_FAIL() yrps_fail_at(__FILE__,__LINE__);
 
-enum yrps_kind_en {
+enum yrps_kind_en
+{
   Kyrps__None,
   Kyrps_string,
   Kyrps_intvect,
   Kyrps_doublevect,
   Kyrps_pairvect,
+  Kyrps_dictvect,
   Kyrps_obseq,
   Kyrps_obref,
   Kyrps__Last
@@ -101,54 +103,74 @@ struct yrps_pairvect_st;
   unsigned char vmark;				\
   short vlen
 
-struct yrps_prefix_st {
+struct yrps_prefix_st
+{
   YRPS_PREFIX_FIELDS;
 };
 
-struct yrps_string_st {
+struct yrps_string_st
+{
   YRPS_PREFIX_FIELDS;
   const char v_str[];
 };
 
-struct yrps_intvec_st {
+struct yrps_intvec_st
+{
   YRPS_PREFIX_FIELDS;
   const int64_t v_intvec[];
 };
 
-struct yrps_dblvec_st {
+struct yrps_dblvec_st
+{
   YRPS_PREFIX_FIELDS;
   const double v_dblvec[];
 };
-struct yrps_pairvect_st {
+struct yrps_pairvect_st
+{
   YRPS_PREFIX_FIELDS;
   /// the pairs should be ordered by the o_id of objects
-  struct {
-    struct yrps_object_st*p_ob;
-    struct yrps_value_st*p_va;
+  struct
+  {
+    struct yrps_object_st *p_ob;
+    struct yrps_value_st *p_va;
   } v_pairvec[];
 };
 
-struct yrps_value_st {
+struct yrps_dictvect_st
+{
   YRPS_PREFIX_FIELDS;
-  union {
+  /// the pairs should be ordered by the p_name
+  struct
+  {
+    const char *p_name;		/* strduped */
+    struct yrps_object_st *p_nmob;
+  } v_dictvec[];
+};
+
+struct yrps_value_st
+{
+  YRPS_PREFIX_FIELDS;
+  union
+  {
     const char v_str[];
     const int64_t v_intvec[];
     const double v_dblvec[];
-    const struct yrps_object_st* v_obvec[];
+    const struct yrps_object_st *v_obvec[];
   };
 };
 
-struct yrps_object_st {
+struct yrps_object_st
+{
   YRPS_PREFIX_FIELDS;
   const int64_t o_id;
   pthread_mutex_t o_mtx;
   int32_t o_nbpair;
   int32_t o_nbval;
-  void* o_funad;
-  struct yrps_pairvect_st*o_pairv;
-  struct yrps_value_st*o_valseq;
+  void *o_funad;
+  struct yrps_pairvect_st *o_pairv;	// vector ordered by o_id
+  struct yrps_value_st *o_valseq;	//
 };
-    
+
 // self program handle (dlopen)
 /*€ poignée vers le programme tout entier (dlopen) */
 extern void *yrps_proghdl;
@@ -177,4 +199,9 @@ typedef void yrps_initfun_t (void);
 // Load the state from directory
 /*€ charge l'état depuis le repertoire indiqué */
 extern void yrps_load_state_from_directory (const char *dirpath);
+
+
+// return 0 if not found
+extern int64_t yrps_prime_above (int64_t l);
+extern int64_t yrps_prime_below (int64_t l);
 #endif //YRPS_INCLUDED

@@ -7,7 +7,7 @@ CFLAGS ?= -Wall -Wextra -O -g
 CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\" -DYRPS_SRCDIR=\"$(realpath .)\"
 .PHONY: all clean modules
 
-OBJECTS= main_yrps.o parse_yrps.o
+OBJECTS= main_yrps.o parse_yrps.o obj_yrps.o primes_yrps.o 
 MODULESOURCES= $(shell /bin/ls _[a-z]*.c)
 
 all: modules yarefpersys
