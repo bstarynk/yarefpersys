@@ -151,15 +151,16 @@ struct yrps_pairvect_st
   } v_pairvec[];
 };
 
+struct yrps_dictpair_st {
+    const char *p_name;		/* strduped */
+    struct yrps_object_st *p_nmob;
+};
+
 struct yrps_dictvect_st
 {
   YRPS_PREFIX_FIELDS;
   /// the pairs should be ordered by the p_name
-  struct
-  {
-    const char *p_name;		/* strduped */
-    struct yrps_object_st *p_nmob;
-  } v_dictvec[];
+  struct yrps_dictpair_st v_dictvec[];
 };
 
 struct yrps_value_st

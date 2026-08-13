@@ -197,17 +197,23 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), f))
 	break;
-      int i = 0;
+      long int i = 0;
       int p = -1;
       char typbuf[16];
       memset (typbuf, 0, sizeof (typbuf));
       if (sscanf
-	  (linbuf, " struct yrps_%10[a-z]_st yrps_v%d =%n", typbuf, &i,
+	  (linbuf, " struct yrps_%10[a-z]_st yrps_v%ld =%n", typbuf, &i,
 	   &p) > 2 && p > 0 && i > 0)
 	{
 #warning should have an hash table and call add_value_yrps
 	  (void) add_value_yrps;
 	}
+      else if (sscanf
+	       (linbuf, " struct yrps_object_st yrps_ob%ld =%n", &i,
+		&p) > 2 && p > 0 && i > 0) {
+#warning should call yrps_make_object
+	(void) yrps_make_object;
+      }
     }
   while (!feof (f));
   fclose (f);
