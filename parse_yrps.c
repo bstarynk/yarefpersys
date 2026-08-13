@@ -26,6 +26,9 @@ static void load_initial_module_yrps (const char *dirpath,
 static void parse_generated_c_file_yrps (const char *dirpath,
 					 const char *entnam);
 
+static void parse_textual_data_file_yrps (const char *dirpath,
+					  const char *entnam);
+
 static struct yrps_value_st **valvec_yrps;
 static int sizvalvec_yrps, lenvalvec_yrps;
 
@@ -131,6 +134,12 @@ yrps_load_state_from_directory (const char *dirpath)
 	{
 	  parse_generated_c_file_yrps (dirpath, dent->d_name);
 	}
+      else if (namlen > 8
+	       && (dent->d_name[0] == '_' || isalpha (dent->d_name[0]))
+	       && !strcmp (dent->d_name + namlen - 5, ".yrps"))
+	{
+	  parse_textual_data_file_yrps (dirpath, dent->d_name);
+	}
     }
   while (dent);
 }				/* end yrps_load_state_from_directory */
@@ -153,7 +162,7 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
     }
   char symbuf[YRPS_SYMLENMAX];
   memset (symbuf, 0, sizeof (symbuf));
-  char *endrps = strstr (entnam, "_yrps");
+  const char *endrps = strstr (entnam, "_yrps");
   if (endrps)
     {
       strncpy (symbuf, entnam, endrps - entnam);
@@ -203,7 +212,33 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
   while (!feof (f));
   fclose (f);
 #warning incomplete parse_generated_c_path_yrps
-}
+}				/* end parse_generated_c_path_yrps */
+
+void
+parse_textual_data_file_yrps (const char *dirpath, const char *entnam)
+{
+  assert (dirpath);
+  assert (entnam);
+  char bufpath[YRPS_PATHMAX];
+  memset (bufpath, 0, sizeof (bufpath));
+  snprintf (bufpath, sizeof (bufpath), "%s/%s", dirpath, entnam);
+  if (yrps_check_valid_textual_file (bufpath))
+    return;
+  FILE *f = fopen (bufpath, "r");
+  assert (f);
+  do
+    {
+      char linbuf[YRPS_LINEWIDTHMAX];
+      memset (linbuf, 0, sizeof (linbuf));
+      if (!fgets (linbuf, sizeof (linbuf), f))
+	break;
+      YRPS_FAIL ();
+#warning unimplemented parse_textual_data_file_yrps
+    }
+  while (!feof (f));
+  fclose (f);
+}				/* end parse_textual_data_file_yrps */
+
 
 int
 add_value_yrps (struct yrps_value_st *v)
