@@ -139,6 +139,7 @@ main (int argc, char **argv)
   yrps_proghdl = dlopen (NULL, RTLD_NOW);
   assert (yrps_proghdl != NULL);
   assert (argc > 0);
+  YRPS_UNIQUE_BREAKPOINT ();
   if (argc == 2)
     handle_two_arguments_yrps ((const char **) argv);
   yrps_load_state_from_directory (yrps_dirpath);

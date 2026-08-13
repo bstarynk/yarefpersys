@@ -20,7 +20,7 @@ _%.so: _%.c yrps.h | GNUmakefile
 
 
 %.o: %.c yrps.h | GNUmakefile
-	$(CC) -c $(CFLAGS)   -o $@ $<
+	$(CC) -c $(CFLAGS) -DYRPS_THIS_BASE=\"$(basename $<)\"  -o $@ $<
 
 modules: $(patsubst _%.c, _%.so, $(MODULESOURCES))
 

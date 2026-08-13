@@ -205,15 +205,33 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
 	  (linbuf, " struct yrps_%10[a-z]_st yrps_v%ld =%n", typbuf, &i,
 	   &p) > 2 && p > 0 && i > 0)
 	{
+	  char valnambuf[32];
+	  memset (valnambuf, 0, sizeof (valnambuf));
+	  snprintf (valnambuf, sizeof (valnambuf), "yrps_v%ld", i);
+	  void *valad = dlsym (yrps_proghdl, valnambuf);
+	  if (!valad)
+	    {
+	      fprintf (stderr, "%s failed to dlsym %s [%s:%d] : %s\n",
+		       yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
+		       dlerror ());
+	      YRPS_FAIL ();
+	    };
+	  if (!strcmp (typbuf, "string"))
+	    {
+	      struct yrps_string_st *valstr = valad;
+	      assert (valstr->vkind == Kyrps_string);
+
 #warning should have an hash table and call add_value_yrps
-	  (void) add_value_yrps;
+	      (void) add_value_yrps;
+	    }
 	}
       else if (sscanf
 	       (linbuf, " struct yrps_object_st yrps_ob%ld =%n", &i,
-		&p) > 2 && p > 0 && i > 0) {
+		&p) > 2 && p > 0 && i > 0)
+	{
 #warning should call yrps_make_object
-	(void) yrps_make_object;
-      }
+	  (void) yrps_make_object;
+	}
     }
   while (!feof (f));
   fclose (f);
@@ -252,14 +270,16 @@ add_value_yrps (struct yrps_value_st *v)
   assert (v);
   if (lenvalvec_yrps >= sizvalvec_yrps)
     {
-      int newsiz = ((3 * lenvalvec_yrps / 2 + 10) & 0x1f) + 1;
+      int newsiz = ((4 * lenvalvec_yrps / 3 + 10) & 0x1f) + 1;
       assert (newsiz > sizvalvec_yrps);
       struct yrps_value_st **oldvec = valvec_yrps;
       valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
       if (oldvec)
-	memcpy (valvec_yrps, oldvec,
-		lenvalvec_yrps * sizeof (struct yrps_value_st *));
-      free (oldvec);
+	{
+	  memcpy (valvec_yrps, oldvec,
+		  lenvalvec_yrps * sizeof (struct yrps_value_st *));
+	  free (oldvec);
+	};
     };
   valvec_yrps[lenvalvec_yrps++] = v;
 }				/* end add_value_yrps */

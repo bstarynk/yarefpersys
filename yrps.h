@@ -73,6 +73,10 @@
 extern int yrps_argc;
 extern char *const *yrps_argv;
 
+/// dlopen handle to our executable program
+/*€ poignée dlopen vers l executable */
+extern void *yrps_proghdl;
+
 /// memory allocation macros
 /*€ macros d'allocation memoire */
 void *yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin);
@@ -82,6 +86,31 @@ void *yrps_malloc_at (unsigned size, const char *fil, int lin);
 
 void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 #define YRPS_FAIL() yrps_fail_at(__FILE__,__LINE__);
+
+#ifdef YRPS_THIS_MODULE
+#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("__" YRPS_THIS_MODULE "_brk_" #Lin "_c" #Cnt  \
+      ": nop; nop\n");        \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+ } while(0)
+#else
+#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("__" YRPS_THIS_BASE "_brk_" #Lin "_c" #Cnt  \
+      ": nop; nop\n");        \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+ } while(0)
+#endif
+
+
+#define YRPS_UNIQUE_BREAKPOINT_AT_BIS(Fil,Lin,Cnt) \
+  YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt)
+
+#define YRPS_UNIQUE_BREAKPOINT() \
+  YRPS_UNIQUE_BREAKPOINT_AT_BIS(__FILE__,__LINE__,__COUNTER__)
 
 enum yrps_kind_en
 {
@@ -151,9 +180,10 @@ struct yrps_pairvect_st
   } v_pairvec[];
 };
 
-struct yrps_dictpair_st {
-    const char *p_name;		/* strduped */
-    struct yrps_object_st *p_nmob;
+struct yrps_dictpair_st
+{
+  const char *p_name;		/* strduped */
+  struct yrps_object_st *p_nmob;
 };
 
 struct yrps_dictvect_st
