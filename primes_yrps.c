@@ -85,7 +85,7 @@ yrps_prime_below (int64_t l)
     return 0;
   if (l < 2)
     return 2;
-  while (lo + 8 < hi)
+  while (lo + 5 < hi)
     {
       int md = (lo + hi) / 2;
       if (primes_yrps[md] > l)
@@ -104,7 +104,7 @@ yrps_prime_below (int64_t l)
 }				/* end yrps_prime_below */
 
 int64_t
-yrps_prime_ranked (int rk)
+yrps_prime_of_rank (int rk)
 {
   const unsigned numprimes = sizeof (primes_yrps) / sizeof (primes_yrps[0]);
   if (rk < 0)
@@ -112,4 +112,29 @@ yrps_prime_ranked (int rk)
   if (rk < (int) numprimes)
     return primes_yrps[rk];
   return 0;
-}				// end of yrps_prime_ranked
+}				// end of yrps_prime_of_rank
+
+int
+yrps_rank_of_prime (int64_t prim)
+{
+  const unsigned numprimes = sizeof (primes_yrps) / sizeof (primes_yrps[0]);
+  if (prim < 0 || (prim % 2 == 0) || (prim % 3 == 0)
+      || (prim % 5 == 0) || prim > primes_yrps[numprimes - 1])
+    return -1;
+  int lo = 0, hi = numprimes;
+  while (lo + 5 < hi)
+    {
+      int md = (lo + hi) / 2;
+      if (primes_yrps[md] > lo)
+	hi = md;
+      else
+	lo = md;
+    }
+  for (int ix = lo; ix < hi; ix++)
+    if (primes_yrps[ix] == prim)
+      return ix;
+  return -1;
+}				/* end yrps_rank_of_prime */
+
+
+/// end of file yarefpersys/primes_yrps.c

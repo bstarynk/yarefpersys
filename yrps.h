@@ -215,5 +215,7 @@ extern void yrps_load_state_from_directory (const char *dirpath);
 // return 0 if not found
 extern int64_t yrps_prime_above (int64_t l);
 extern int64_t yrps_prime_below (int64_t l);
-
+extern int64_t yrps_prime_of_rank (int rk);
+// return -1 for non prime or unknown prime
+extern int yrps_rank_of_prime (int64_t prim);
 #endif //YRPS_INCLUDED
