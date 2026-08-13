@@ -29,8 +29,8 @@ struct yrps_objbucket_st
 };
 
 
-static struct yrps_objbucket_st **obarr_yrps;
-static int64_t sizobarr_yrps;
+static struct yrps_objbucket_st **buckobarr_yrps;
+static int64_t sizbuckobarr_yrps;
 static int64_t cntob_yrps;
 static pthread_mutex_t mtxob_yrps = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
@@ -42,16 +42,16 @@ yrps_find_object (int64_t oid)
   pthread_mutex_lock (&mtxob_yrps);
   if (!oid)
     goto end;
-  if (!obarr_yrps)
+  if (!buckobarr_yrps)
     {
       int64_t newsiz = 31;	/* it is prime */
-      obarr_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_calloc *));
-      sizobarr_yrps = newsiz;
+      buckobarr_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_calloc *));
+      sizbuckobarr_yrps = newsiz;
       assert (cntob_yrps == 0);
       goto end;
     };
-  unsigned bucknum = (unsigned) (oid % sizobarr_yrps);
-  pbucket = obarr_yrps[bucknum];
+  unsigned bucknum = (unsigned) (oid % sizbuckobarr_yrps);
+  pbucket = buckobarr_yrps[bucknum];
   if (!pbucket)
     goto end;
 end:
@@ -74,19 +74,37 @@ yrps_make_object (int64_t oid)
   pob = YRPS_MALLOC (sizeof (struct yrps_object_st));
   pob->vkind = Kyrps_object;
   pob->o_id = oid;
-  unsigned bucknum = (unsigned) (oid % sizobarr_yrps);
-  pbucket = obarr_yrps[bucknum];
+  unsigned bucknum = (unsigned) (oid % sizbuckobarr_yrps);
+  pbucket = buckobarr_yrps[bucknum];
   if (!pbucket)
     {
       unsigned bucksiz = 13;	/* a prime number */
-      pbucket = YRPS_MALLOC (sizeof (struct yrps_objvec_st)
+      pbucket = YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
 			     + bucksiz * sizeof (void *));
       pbucket->vkind = Kyrps_objbucket;
       pbucket->vlen = bucksiz;
+      pbucket->b_buckcount = 1;
       pbucket->b_objvec[0] = pob;
       for (unsigned bix = 1; bix < bucksiz; bix++)
 	pbucket->b_objvec[bix] = NULL;
-    };
+      buckobarr_yrps[bucknum] = pbucket;
+      goto end;
+    }
+  else if (5 * pbucket->b_buckcount > 4 * pbucket->vlen)
+    {
+      unsigned newbucksiz =
+	yrps_prime_above ((9*pbucket->b_buckcount)/8);
+       struct yrps_objbucket_st *pnewbucket =
+	 YRPS_MALLOC(sizeof (struct yrps_objbucket_st)
+		     + newbucksiz * sizeof (void *));
+       pnewbucket->vlen = newbucksiz;
+       unsigned oldbucksize = pbucket->vlen;
+       for (unsigned oldix=0; oldix<oldbucksize; oldix++)
+	 if (pbucket->b_objvec[oldix]) {
+	   pnewbucket->b_objvec[pnewbucket->b_buckcount++] =
+	     pbucket->b_objvec[oldix];
+	 };      
+    }
 #warning very incomplete  yrps_make_object
   fprintf (stderr, "incomplete yrps_make_object oid=%ld\n", (long) oid);
   YRPS_FAIL ();
