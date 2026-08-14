@@ -92,18 +92,18 @@ yrps_make_object (int64_t oid)
     }
   else if (5 * pbucket->b_buckcount > 4 * pbucket->vlen)
     {
-      unsigned newbucksiz =
-	yrps_prime_above ((9*pbucket->b_buckcount)/8);
-       struct yrps_objbucket_st *pnewbucket =
-	 YRPS_MALLOC(sizeof (struct yrps_objbucket_st)
+      unsigned newbucksiz = yrps_prime_above ((9 * pbucket->b_buckcount) / 8);
+      struct yrps_objbucket_st *pnewbucket =
+	YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
 		     + newbucksiz * sizeof (void *));
-       pnewbucket->vlen = newbucksiz;
-       unsigned oldbucksize = pbucket->vlen;
-       for (unsigned oldix=0; oldix<oldbucksize; oldix++)
-	 if (pbucket->b_objvec[oldix]) {
-	   pnewbucket->b_objvec[pnewbucket->b_buckcount++] =
-	     pbucket->b_objvec[oldix];
-	 };      
+      pnewbucket->vlen = newbucksiz;
+      unsigned oldbucksize = pbucket->vlen;
+      for (unsigned oldix = 0; oldix < oldbucksize; oldix++)
+	if (pbucket->b_objvec[oldix])
+	  {
+	    pnewbucket->b_objvec[pnewbucket->b_buckcount++] =
+	      pbucket->b_objvec[oldix];
+	  };
     }
 #warning very incomplete  yrps_make_object
   fprintf (stderr, "incomplete yrps_make_object oid=%ld\n", (long) oid);
