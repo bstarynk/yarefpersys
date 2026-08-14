@@ -27,6 +27,8 @@ char *const *yrps_argv;
 void *yrps_proghdl;
 char yrps_dirpath[YRPS_PATHMAX] = YRPS_SRCDIR;
 
+static void handle_prog_arguments_yrps (int, const char **);
+
 
 bool
 yrps_readable_directory (const char *dn)
@@ -43,51 +45,39 @@ yrps_readable_directory (const char *dn)
 }				/* end yrps_readable_directory */
 
 static void
-handle_two_arguments_yrps (const char **argv)
+show_version_yrps (void)
 {
-  assert (argv);
-  assert (argv[0]);
-  assert (argv[1]);
-  if (!strcmp (argv[1], "--version"))
-    {
-      printf ("%s version id %s\n", argv[0], main_yrps_id);
-      printf ("\t curl version is %s\n", curl_version ());
-      printf ("\t see github.com/bstarynk/yarefpersys\n");
-      exit (EXIT_SUCCESS);
-    }
-  else if (!strcmp (argv[1], "--help"))
-    {
-      printf ("%s usage (from %s:%d):\n", argv[0], __FILE__, __LINE__);
-      printf ("\t --version              # gives version information\n");
-      printf ("\t --help                 # gives this help\n");
-      printf ("\t see refpersys.org and github.com/RefPerSys\n");
-      printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
-	      __FILE__, __LINE__ - 1);
-      printf ("\t °yrps_prefix_st size %d align %d\n",
-	      (int) sizeof (struct yrps_prefix_st),
-	      (int) alignof (struct yrps_prefix_st));
-      printf ("\t °yrps_value_st size %d align %d\n",
-	      (int) sizeof (struct yrps_value_st),
-	      (int) alignof (struct yrps_value_st));
-      printf ("\t °yrps_pairvect_st size %d align %d\n",
-	      (int) sizeof (struct yrps_pairvect_st),
-	      (int) alignof (struct yrps_pairvect_st));
-      printf ("\t °yrps_dictvect_st size %d align %d\n",
-	      (int) sizeof (struct yrps_dictvect_st),
-	      (int) alignof (struct yrps_dictvect_st));
-      printf ("\t °yrps_object_st size %d align %d\n",
-	      (int) sizeof (struct yrps_object_st),
-	      (int) alignof (struct yrps_object_st));
+  printf ("%s version id %s\n", yrps_argv[0], main_yrps_id);
+  printf ("\t curl version is %s\n", curl_version ());
+  printf ("\t see github.com/bstarynk/yarefpersys\n");
+}				/* end show_version_yrps */
+
+static void
+show_help_yrps (void)
+{
+  printf ("%s usage (from %s:%d):\n", yrps_argv[0], __FILE__, __LINE__);
+  printf ("\t --version              # gives version information\n");
+  printf ("\t --help                 # gives this help\n");
+  printf ("\t see refpersys.org and github.com/RefPerSys\n");
+  printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
+	  __FILE__, __LINE__ - 1);
+  printf ("\t °yrps_prefix_st size %d align %d\n",
+	  (int) sizeof (struct yrps_prefix_st),
+	  (int) alignof (struct yrps_prefix_st));
+  printf ("\t °yrps_value_st size %d align %d\n",
+	  (int) sizeof (struct yrps_value_st),
+	  (int) alignof (struct yrps_value_st));
+  printf ("\t °yrps_pairvect_st size %d align %d\n",
+	  (int) sizeof (struct yrps_pairvect_st),
+	  (int) alignof (struct yrps_pairvect_st));
+  printf ("\t °yrps_dictvect_st size %d align %d\n",
+	  (int) sizeof (struct yrps_dictvect_st),
+	  (int) alignof (struct yrps_dictvect_st));
+  printf ("\t °yrps_object_st size %d align %d\n",
+	  (int) sizeof (struct yrps_object_st),
+	  (int) alignof (struct yrps_object_st));
 #warning incomplete --help code
-      exit (EXIT_SUCCESS);
-    };
-  if (argv[1][0] == '/' || argv[1][0] == '.' || isalpha (argv[1][0]))
-    {
-      if (yrps_readable_directory (argv[1])
-	  && strlen (argv[1]) < YRPS_PATHMAX)
-	strcpy (yrps_dirpath, argv[1]);
-    }
-}				/* end handle_two_arguments_yrps */
+}				/* end show_help_yrps */
 
 void
 yrps_fail_at (const char *fil, int lin)
@@ -131,6 +121,31 @@ yrps_malloc_at (unsigned size, const char *fil, int lin)
   return p;
 }				/* end yrps_malloc_at */
 
+void
+handle_prog_arguments_yrps (int argc, const char **argv)
+{
+  for (int aix = 0; aix < argc; aix++)
+    {
+      int p = -1;
+      const char *curarg = argv[aix];
+      assert (curarg != NULL);
+      if (!strcmp (curarg, "--version"))
+	show_version_yrps ();
+      else if (!strcmp (curarg, "--help"))
+	show_help_yrps ();
+      else if (sscanf (curarg, "--state=%n", &p) > 0 && p > 0)
+	{
+	  const char *statdir = curarg + p;
+	  YRPS_UNIQUE_BREAKPOINT ();
+	  assert (statdir && statdir[0]);
+	  struct stat ds = { };
+	  if (!stat (statdir, &ds))
+	    YRPS_PRINTFAIL ("bad state %s (%s)", statdir, strerror (errno));
+	}
+#warning incomplete handle_prog_arguments_yrps loop
+    }
+}				/* end handle_prog_arguments_yrps */
+
 int
 main (int argc, char **argv)
 {
@@ -138,10 +153,13 @@ main (int argc, char **argv)
   yrps_argv = argv;
   yrps_proghdl = dlopen (NULL, RTLD_NOW);
   assert (yrps_proghdl != NULL);
+  if (!yrps_proghdl)
+    YRPS_FAIL ();
   assert (argc > 0);
   YRPS_UNIQUE_BREAKPOINT ();
-  if (argc == 2)
-    handle_two_arguments_yrps ((const char **) argv);
+  handle_prog_arguments_yrps (argc, (const char **) argv);
+  if (!yrps_dirpath[0])
+    strncpy (yrps_dirpath, YRPS_SRCDIR, sizeof (yrps_dirpath) - 1);
   yrps_load_state_from_directory (yrps_dirpath);
   return 0;
 #warning nearly empty main

@@ -87,6 +87,9 @@ void *yrps_malloc_at (unsigned size, const char *fil, int lin);
 void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 #define YRPS_FAIL() yrps_fail_at(__FILE__,__LINE__);
 
+#define YRPS_PRINTFAIL(Fmt,...) do { \
+fprintf(stderr, Fmt, __VA_ARGS__); YRPS_FAIL(); } while(0)
+
 #ifdef YRPS_THIS_MODULE
 #define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
     asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
