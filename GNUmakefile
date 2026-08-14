@@ -1,3 +1,4 @@
+#!/usr/bin/gmake -f
 ### file yarefpersys/GNUmakefile
 ### See https://github.com/bstarynk/yarefpersys
 CC ?= gcc
@@ -7,7 +8,8 @@ CFLAGS ?= -Wall -Wextra -O -g
 CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\" -DYRPS_SRCDIR=\"$(realpath .)\"
 .PHONY: all clean modules indent
 
-OBJECTS= main_yrps.o parse_yrps.o obj_yrps.o primes_yrps.o 
+SOURCES= $(wildcard [a-z]*.c)
+OBJECTS= $(patsubst %.c, %.o, $(SOURCES))
 MODULESOURCES= $(shell /bin/ls _[a-z]*.c)
 
 all: modules yarefpersys
