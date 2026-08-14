@@ -108,6 +108,7 @@ yrps_register_object (struct yrps_object_st *pob)
   assert (pob);
   assert (pob->vkind == Kyrps_object);
   assert (pob->o_id > 0);
+  YRPS_UNIQUE_BREAKPOINT ();
   pthread_mutex_lock (&mtxob_yrps);
   if (!buckobarr_yrps)
     {
@@ -137,7 +138,7 @@ yrps_register_object (struct yrps_object_st *pob)
     {
       unsigned newbucksiz = yrps_prime_above ((9 * pbucket->b_buckcount) / 8);
       if (!newbucksiz)
-	YRPS_PRINTFAIL("too many buckets for %d object buckets", newbucksiz);
+	YRPS_PRINTFAIL ("too many buckets for %d object buckets", newbucksiz);
       struct yrps_objbucket_st *pnewbucket =
 	YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
 		     + newbucksiz * sizeof (void *));
