@@ -45,7 +45,7 @@ const int64_t primes_yrps[] = {
   489985739, 653314339, 871085819, 1161447799,
   1548597073, 2064796109, 2753061491, 3670748671,
   4894331573, 6525775439,
-  0				/// terminating zero added manually
+  0                             /// terminating zero added manually
 };
 
 
@@ -62,9 +62,9 @@ yrps_prime_above (int64_t l)
     {
       int md = (lo + hi) / 2;
       if (primes_yrps[md] > l)
-	hi = md;
+        hi = md;
       else
-	lo = md;
+        lo = md;
     };
   if (hi < (int) numprimes - 1)
     hi++;
@@ -74,7 +74,7 @@ yrps_prime_above (int64_t l)
     if (primes_yrps[ix] > l)
       return primes_yrps[ix];
   return 0;
-}				/* end yrps_prime_above */
+}                               /* end yrps_prime_above */
 
 int64_t
 yrps_prime_below (int64_t l)
@@ -89,9 +89,9 @@ yrps_prime_below (int64_t l)
     {
       int md = (lo + hi) / 2;
       if (primes_yrps[md] > l)
-	hi = md;
+        hi = md;
       else
-	lo = md;
+        lo = md;
     };
   if (hi < (int) numprimes - 1)
     hi++;
@@ -101,7 +101,7 @@ yrps_prime_below (int64_t l)
     if (primes_yrps[ix] < l)
       return primes_yrps[ix];
   return 0;
-}				/* end yrps_prime_below */
+}                               /* end yrps_prime_below */
 
 int64_t
 yrps_prime_of_rank (int rk)
@@ -112,7 +112,7 @@ yrps_prime_of_rank (int rk)
   if (rk < (int) numprimes)
     return primes_yrps[rk];
   return 0;
-}				// end of yrps_prime_of_rank
+}                               // end of yrps_prime_of_rank
 
 int
 yrps_rank_of_prime (int64_t prim)
@@ -126,15 +126,15 @@ yrps_rank_of_prime (int64_t prim)
     {
       int md = (lo + hi) / 2;
       if (primes_yrps[md] > lo)
-	hi = md;
+        hi = md;
       else
-	lo = md;
+        lo = md;
     }
   for (int ix = lo; ix < hi; ix++)
     if (primes_yrps[ix] == prim)
       return ix;
   return -1;
-}				/* end yrps_rank_of_prime */
+}                               /* end yrps_rank_of_prime */
 
 
 /// end of file yarefpersys/primes_yrps.c
