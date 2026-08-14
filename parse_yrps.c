@@ -29,10 +29,6 @@ static void parse_generated_c_file_yrps (const char *dirpath,
 static void parse_textual_data_file_yrps (const char *dirpath,
 					  const char *entnam);
 
-static struct yrps_value_st **valvec_yrps;
-static int sizvalvec_yrps, lenvalvec_yrps;
-
-static int add_value_yrps (struct yrps_value_st *);
 
 bool
 yrps_check_valid_textual_file (const char *path)
@@ -211,18 +207,15 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
 	  void *valad = dlsym (yrps_proghdl, valnambuf);
 	  if (!valad)
 	    {
-	      fprintf (stderr, "%s failed to dlsym %s [%s:%d] : %s\n",
+	      YRPS_PRINTFAIL("%s failed to dlsym %s [%s:%d] : %s\n",
 		       yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
 		       dlerror ());
-	      YRPS_FAIL ();
 	    };
 	  if (!strcmp (typbuf, "string"))
 	    {
 	      struct yrps_string_st *valstr = valad;
 	      assert (valstr->vkind == Kyrps_string);
-
-#warning should have an hash table and call add_value_yrps
-	      (void) add_value_yrps;
+	      yrps_register_value((struct yrps_value_st*)valstr);
 	    }
 	}
       else if (sscanf
@@ -256,38 +249,14 @@ parse_textual_data_file_yrps (const char *dirpath, const char *entnam)
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), f))
 	break;
-      YRPS_FAIL ();
+      YRPS_PRINTFAIL ("unimplemented parse_textual_data_file_yrps bufpath=%s",
+		      bufpath);
 #warning unimplemented parse_textual_data_file_yrps
     }
   while (!feof (f));
   fclose (f);
 }				/* end parse_textual_data_file_yrps */
 
-
-int
-add_value_yrps (struct yrps_value_st *v)
-{
-  assert (v);
-  assert (v->vkind > Kyrps__None && v->vkind < Kyrps__Internal);
-  if (lenvalvec_yrps >= sizvalvec_yrps)
-    {
-      int newsiz = ((4 * lenvalvec_yrps / 3 + 10) & 0x1f) + 1;
-      assert (newsiz > sizvalvec_yrps);
-      assert (newsiz < (2<<30));
-      struct yrps_value_st **oldvec = valvec_yrps;
-      valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
-      if (oldvec)
-	{
-	  memcpy (valvec_yrps, oldvec,
-		  lenvalvec_yrps * sizeof (struct yrps_value_st *));
-	  free (oldvec);
-	};
-    };
-  int vix = ++lenvalvec_yrps;
-  valvec_yrps[vix] = v;
-  v->vindex = vix;
-  assert(vix > 0 && vix < (2<<30));
-}				/* end add_value_yrps */
 
 
 ///// eof parse_yrps.c [€fin du fichier]

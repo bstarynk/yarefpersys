@@ -1,4 +1,4 @@
-// file yarefpersys/obj_yrps.c
+// file yarefpersys/objval_yrps.c
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /***
@@ -19,7 +19,7 @@
  ****/
 #include "yrps.h"
 
-const char obj_yrps_id[] = YRPS_ID;
+const char objval_yrps_id[] = YRPS_ID;
 
 struct yrps_objbucket_st
 {
@@ -33,6 +33,10 @@ static struct yrps_objbucket_st **buckobarr_yrps;
 static int64_t sizbuckobarr_yrps;
 static int64_t cntob_yrps;
 static pthread_mutex_t mtxob_yrps = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+static struct yrps_value_st **valvec_yrps;
+static int sizvalvec_yrps, lenvalvec_yrps;
+static pthread_mutex_t mtxval_yrps = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 struct yrps_object_st *
 yrps_find_object (int64_t oid)
@@ -111,6 +115,55 @@ yrps_make_object (int64_t oid)
 end:
   pthread_mutex_unlock (&mtxob_yrps);
   return pob;
-}
+} /* end yrps_make_object */
 
-#warning obj_yrps.c needs a lot of code
+
+int
+yrps_register_object(struct yrps_object_st*o)
+{
+  int oix = 0;
+  assert(o);
+  assert(o->vkind == Kyrps_object);
+  pthread_mutex_lock(&mtxob_yrps);
+  YRPS_PRINTFAIL("unimplemented yrps_register_object o@%p", o);
+  goto end;
+ end:
+  pthread_mutex_unlock(&mtxob_yrps);
+#warning incomplete yrps_register_object
+  return oix;
+} /* end yrps_register_object */
+
+int
+yrps_register_value(struct yrps_value_st*v)
+{
+  int vix = 0;
+  assert (v);
+  assert (v->vkind > Kyrps__None && v->vkind < Kyrps__Internal);
+  if (v->vkind == Kyrps_object)
+    return yrps_register_object((struct yrps_object_st*)v);
+  YRPS_UNIQUE_BREAKPOINT();
+  pthread_mutex_lock(&mtxval_yrps);
+  if (lenvalvec_yrps >= sizvalvec_yrps)
+    {
+      int newsiz = ((4 * lenvalvec_yrps / 3 + 10) & 0x1f) + 1;
+      assert (newsiz > sizvalvec_yrps);
+      assert (newsiz < (2<<30));
+      struct yrps_value_st **oldvec = valvec_yrps;
+      valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
+      if (oldvec)
+	{
+	  memcpy (valvec_yrps, oldvec,
+		  lenvalvec_yrps * sizeof (struct yrps_value_st *));
+	  free (oldvec);
+	};
+    };
+  vix = ++lenvalvec_yrps;
+  valvec_yrps[vix] = v;
+  v->vindex = vix;
+  assert(vix > 0 && vix < (2<<30));
+  goto end;
+ end:
+  pthread_mutex_unlock(&mtxval_yrps);
+  return vix;
+}
+#warning objval_yrps.c needs a lot of code

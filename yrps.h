@@ -229,6 +229,10 @@ struct yrps_object_st
 extern struct yrps_object_st *yrps_make_object (int64_t oid);
 #define YRPS_NEW_OBJECT() yrps_make_object((int64_t)0)
 
+
+extern int yrps_register_object(struct yrps_object_st*o);
+extern int yrps_register_value(struct yrps_value_st*v);
+
 // check that a directory is readable and convenient
 /*€ vérifie qu'un repertoire est lisible et convenable */
 extern bool yrps_readable_directory (const char *dirpath);
