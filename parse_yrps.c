@@ -207,15 +207,15 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
 	  void *valad = dlsym (yrps_proghdl, valnambuf);
 	  if (!valad)
 	    {
-	      YRPS_PRINTFAIL("%s failed to dlsym %s [%s:%d] : %s\n",
-		       yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
-		       dlerror ());
+	      YRPS_PRINTFAIL ("%s failed to dlsym %s [%s:%d] : %s\n",
+			      yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
+			      dlerror ());
 	    };
 	  if (!strcmp (typbuf, "string"))
 	    {
 	      struct yrps_string_st *valstr = valad;
 	      assert (valstr->vkind == Kyrps_string);
-	      yrps_register_value((struct yrps_value_st*)valstr);
+	      yrps_register_value ((struct yrps_value_st *) valstr);
 	    }
 	}
       else if (sscanf
