@@ -5,7 +5,7 @@ RM ?= rm -vf
 YRPS_SHORTGIT := $(shell ./yrps-shortgit.sh)
 CFLAGS ?= -Wall -Wextra -O -g
 CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\" -DYRPS_SRCDIR=\"$(realpath .)\"
-.PHONY: all clean modules
+.PHONY: all clean modules indent
 
 OBJECTS= main_yrps.o parse_yrps.o obj_yrps.o primes_yrps.o 
 MODULESOURCES= $(shell /bin/ls _[a-z]*.c)
@@ -26,3 +26,6 @@ modules: $(patsubst _%.c, _%.so, $(MODULESOURCES))
 
 clean:
 	$(RM) *.o *.so yarefpersys *~
+
+indent:
+	for f in [a-z]*.[ch]; do indent $$f ; done
