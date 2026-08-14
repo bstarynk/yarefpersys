@@ -22,12 +22,12 @@
 const char parse_yrps_id[] = YRPS_ID;
 
 static void load_initial_module_yrps (const char *dirpath,
-				      const char *entnam);
+                                      const char *entnam);
 static void parse_generated_c_file_yrps (const char *dirpath,
-					 const char *entnam);
+                                         const char *entnam);
 
 static void parse_textual_data_file_yrps (const char *dirpath,
-					  const char *entnam);
+                                          const char *entnam);
 
 
 bool
@@ -51,26 +51,26 @@ yrps_check_valid_textual_file (const char *path)
     {
       linecnt++;
       if (linecnt > YRPS_LINECOUNTMAX)
-	{
-	  reason = "too many lines";
-	  errline = __LINE__ - 2;
-	  goto failure;
-	};
+        {
+          reason = "too many lines";
+          errline = __LINE__ - 2;
+          goto failure;
+        };
       memset (linebuf, 0, sizeof (linebuf));
       if (!fgets (linebuf, (int) sizeof (linebuf), f))
-	{
-	  if (feof (f))
-	    break;
-	  reason = "fgets failed";
-	  errline = __LINE__ - 2;
-	  goto failure;
-	};
+        {
+          if (feof (f))
+            break;
+          reason = "fgets failed";
+          errline = __LINE__ - 2;
+          goto failure;
+        };
       if (u8_check ((uint8_t *) linebuf, sizeof (linebuf)))
-	{
-	  reason = "bad utf8 unicode";
-	  errline = __LINE__ - 2;
-	  goto failure;
-	};
+        {
+          reason = "bad utf8 unicode";
+          errline = __LINE__ - 2;
+          goto failure;
+        };
     }
   while (!feof (f));
   assert (linecnt > 0);
@@ -78,12 +78,12 @@ yrps_check_valid_textual_file (const char *path)
 failure:
   if (errline > 0)
     fprintf (stderr, "%s: %s failed on %s line %s:%d (%s @ %s:%d)\n",
-	     yrps_argv[0], __FUNCTION__, path, __FILE__, errline, reason,
-	     path, linecnt);
+             yrps_argv[0], __FUNCTION__, path, __FILE__, errline, reason,
+             path, linecnt);
   fclose (f);
   fflush (NULL);
   return false;
-}				/* end yrps_check_valid_textual_file */
+}                               /* end yrps_check_valid_textual_file */
 
 void
 yrps_load_state_from_directory (const char *dirpath)
@@ -98,17 +98,17 @@ yrps_load_state_from_directory (const char *dirpath)
     {
       dent = readdir (dir);
       if (!dent)
-	break;
+        break;
       if (dent->d_type != DT_REG)
-	continue;
+        continue;
       if (dent->d_name[0] == '.')
-	continue;
+        continue;
       if (!strcmp (dent->d_name, selfname))
-	continue;
+        continue;
       int namlen = (int) strlen (dent->d_name);
       if (namlen > 3 && dent->d_name[namlen - 1] == 'o'
-	  && dent->d_name[namlen - 2] == '.')
-	continue;
+          && dent->d_name[namlen - 2] == '.')
+        continue;
       // A loadable module like abc.so or _xy*.so is dlopened and its
       // initialization function (e.g. abc_inityrps) is run if it
       // exists.
@@ -116,29 +116,29 @@ yrps_load_state_from_directory (const char *dirpath)
          dynamiquement par dlopen et sa fonction d'initialisation
          (e.g. abc_inityrps) executée */
       if (namlen > 4 && namlen + dirpathlen + 1 < YRPS_PATHMAX
-	  && namlen < YRPS_SYMLENMAX
-	  && (isalnum (dent->d_name[0]) || dent->d_name[0] == '_')
-	  && dent->d_name[namlen - 3] == '.'
-	  && dent->d_name[namlen - 2] == 's'
-	  && dent->d_name[namlen - 1] == 'o')
-	{
-	  load_initial_module_yrps (dirpath, dent->d_name);
-	}
+          && namlen < YRPS_SYMLENMAX
+          && (isalnum (dent->d_name[0]) || dent->d_name[0] == '_')
+          && dent->d_name[namlen - 3] == '.'
+          && dent->d_name[namlen - 2] == 's'
+          && dent->d_name[namlen - 1] == 'o')
+        {
+          load_initial_module_yrps (dirpath, dent->d_name);
+        }
       else if (namlen > 4 && dent->d_name[0] == '_'
-	       && dent->d_name[namlen - 2] == '.'
-	       && dent->d_name[namlen - 1] == 'c')
-	{
-	  parse_generated_c_file_yrps (dirpath, dent->d_name);
-	}
+               && dent->d_name[namlen - 2] == '.'
+               && dent->d_name[namlen - 1] == 'c')
+        {
+          parse_generated_c_file_yrps (dirpath, dent->d_name);
+        }
       else if (namlen > 8
-	       && (dent->d_name[0] == '_' || isalpha (dent->d_name[0]))
-	       && !strcmp (dent->d_name + namlen - 5, ".yrps"))
-	{
-	  parse_textual_data_file_yrps (dirpath, dent->d_name);
-	}
+               && (dent->d_name[0] == '_' || isalpha (dent->d_name[0]))
+               && !strcmp (dent->d_name + namlen - 5, ".yrps"))
+        {
+          parse_textual_data_file_yrps (dirpath, dent->d_name);
+        }
     }
   while (dent);
-}				/* end yrps_load_state_from_directory */
+}                               /* end yrps_load_state_from_directory */
 
 void
 load_initial_module_yrps (const char *dirpath, const char *entnam)
@@ -152,8 +152,8 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
   if (!dlh)
     {
       fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)!\n",
-	       yrps_argv[0], __FUNCTION__, bufpath,
-	       __FILE__, __LINE__ - 2, dlerror ());
+               yrps_argv[0], __FUNCTION__, bufpath,
+               __FILE__, __LINE__ - 2, dlerror ());
       YRPS_UNIQUE_BREAKPOINT ();
       return;
     }
@@ -180,11 +180,11 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
   else
     {
       fprintf (stderr, "%s git %s no function named %s [%s:%d] (%s)!\n",
-	       yrps_argv[0], parse_yrps_id, symbuf, __FILE__, __LINE__ - 1,
-	       dlerror ());
+               yrps_argv[0], parse_yrps_id, symbuf, __FILE__, __LINE__ - 1,
+               dlerror ());
       YRPS_UNIQUE_BREAKPOINT ();
     }
-}				/* end load_initial_module_yrps */
+}                               /* end load_initial_module_yrps */
 
 void
 parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
@@ -202,56 +202,56 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
       char linbuf[YRPS_LINEWIDTHMAX];
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), f))
-	break;
+        break;
       long int i = 0;
       void *valad = NULL;
       int p = -1;
       char typbuf[16];
       memset (typbuf, 0, sizeof (typbuf));
       if (sscanf
-	  (linbuf, " struct yrps_%10[a-z]_st yrps_v%ld =%n", typbuf, &i,
-	   &p) > 2 && p > 0 && i > 0)
-	{
-	  char valnambuf[32];
-	  memset (valnambuf, 0, sizeof (valnambuf));
-	  snprintf (valnambuf, sizeof (valnambuf), "yrps_v%ld", i);
-	  valad = dlsym (yrps_proghdl, valnambuf);
-	  if (!valad)
-	    {
-	      YRPS_PRINTFAIL ("%s failed to dlsym %s [%s:%d] : %s\n",
-			      yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
-			      dlerror ());
-	    };
-	  if (!strcmp (typbuf, "string"))
-	    {
-	      struct yrps_string_st *valstr = valad;
-	      assert (valstr->vkind == Kyrps_string);
-	      yrps_register_value ((struct yrps_value_st *) valstr);
-	    }
-	}
+          (linbuf, " struct yrps_%10[a-z]_st yrps_v%ld =%n", typbuf, &i,
+           &p) > 2 && p > 0 && i > 0)
+        {
+          char valnambuf[32];
+          memset (valnambuf, 0, sizeof (valnambuf));
+          snprintf (valnambuf, sizeof (valnambuf), "yrps_v%ld", i);
+          valad = dlsym (yrps_proghdl, valnambuf);
+          if (!valad)
+            {
+              YRPS_PRINTFAIL ("%s failed to dlsym %s [%s:%d] : %s\n",
+                              yrps_argv[0], valnambuf, __FILE__, __LINE__ - 1,
+                              dlerror ());
+            };
+          if (!strcmp (typbuf, "string"))
+            {
+              struct yrps_string_st *valstr = valad;
+              assert (valstr->vkind == Kyrps_string);
+              yrps_register_value ((struct yrps_value_st *) valstr);
+            }
+        }
       else if (sscanf
-	       (linbuf, " struct yrps_object_st yrps_ob%ld =%n", &i,
-		&p) > 2 && p > 0 && i > 0)
-	{
-	  assert (valad != NULL);
-	  struct yrps_object_st *protob = (struct yrps_object_st *) valad;
-	  assert (protob->vkind == Kyrps_object);
-	  assert (protob->o_id == i);
-	  struct yrps_object_st *pob = yrps_make_object ((int64_t) i);
-	  YRPS_UNIQUE_BREAKPOINT ();
-	  if (protob->o_nbpair > 0)
-	    {
+               (linbuf, " struct yrps_object_st yrps_ob%ld =%n", &i,
+                &p) > 2 && p > 0 && i > 0)
+        {
+          assert (valad != NULL);
+          struct yrps_object_st *protob = (struct yrps_object_st *) valad;
+          assert (protob->vkind == Kyrps_object);
+          assert (protob->o_id == i);
+          struct yrps_object_st *pob = yrps_make_object ((int64_t) i);
+          YRPS_UNIQUE_BREAKPOINT ();
+          if (protob->o_nbpair > 0)
+            {
 
-	    };
-	  if (protob->o_nbval > 0)
-	    {
-	    };
-	}
+            };
+          if (protob->o_nbval > 0)
+            {
+            };
+        }
     }
   while (!feof (f));
   fclose (f);
 #warning incomplete parse_generated_c_path_yrps
-}				/* end parse_generated_c_path_yrps */
+}                               /* end parse_generated_c_path_yrps */
 
 void
 parse_textual_data_file_yrps (const char *dirpath, const char *entnam)
@@ -270,14 +270,14 @@ parse_textual_data_file_yrps (const char *dirpath, const char *entnam)
       char linbuf[YRPS_LINEWIDTHMAX];
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), f))
-	break;
+        break;
       YRPS_PRINTFAIL ("unimplemented parse_textual_data_file_yrps bufpath=%s",
-		      bufpath);
+                      bufpath);
 #warning unimplemented parse_textual_data_file_yrps
     }
   while (!feof (f));
   fclose (f);
-}				/* end parse_textual_data_file_yrps */
+}                               /* end parse_textual_data_file_yrps */
 
 
 
