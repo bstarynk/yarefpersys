@@ -10,7 +10,8 @@ CFLAGS += -DYRPS_ID=\"$(YRPS_SHORTGIT)\" -DYRPS_SRCDIR=\"$(realpath .)\"
 
 SOURCES= $(wildcard [a-z]*.c)
 OBJECTS= $(patsubst %.c, %.o, $(SOURCES))
-MODULESOURCES= $(shell /bin/ls _[a-z]*.c)
+# by convention _[0-9A-Za-z]*.c files are generated
+MODULESOURCES= $(shell /bin/ls _[0-9A-Za-z]*.c)
 
 all: modules yarefpersys
 
