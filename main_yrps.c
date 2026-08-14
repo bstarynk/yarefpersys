@@ -162,8 +162,8 @@ main (int argc, char **argv)
   if (!yrps_dirpath[0])
     strncpy (yrps_dirpath, YRPS_SRCDIR, sizeof (yrps_dirpath) - 1);
   yrps_load_state_from_directory (yrps_dirpath);
-  if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO))
-    yrps_init_readline();
+  if (isatty (STDIN_FILENO) && isatty (STDOUT_FILENO))
+    yrps_init_readline ();
   return 0;
 #warning nearly empty main
 }				/* end of main */
