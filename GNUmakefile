@@ -33,4 +33,4 @@ clean:
 	$(RM) *.o *.so yarefpersys *~
 
 indent:
-	for f in [a-z]*.[ch]; do indent $$f ; done
+	for f in [a-z]*.[ch]; do indent --no-tabs  $$f ; done
