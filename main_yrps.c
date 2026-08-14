@@ -49,6 +49,7 @@ show_version_yrps (void)
 {
   printf ("%s version id %s\n", yrps_argv[0], main_yrps_id);
   printf ("\t curl version is %s\n", curl_version ());
+  printf ("\t readline version is %s\n", rl_library_version);
   printf ("\t see github.com/bstarynk/yarefpersys\n");
 }				/* end show_version_yrps */
 
