@@ -151,9 +151,10 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
   void *dlh = dlopen (bufpath, RTLD_NOW);
   if (!dlh)
     {
-      fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)\n",
+      fprintf (stderr, "%s: %s dlopen %s failed line %s:%d (%s)!\n",
 	       yrps_argv[0], __FUNCTION__, bufpath,
 	       __FILE__, __LINE__ - 2, dlerror ());
+      YRPS_UNIQUE_BREAKPOINT ();
       return;
     }
   char symbuf[YRPS_SYMLENMAX];
@@ -168,12 +169,21 @@ load_initial_module_yrps (const char *dirpath, const char *entnam)
     }
   else
     snprintf (symbuf, sizeof (symbuf), "%.20s_inityrps", entnam);
+  YRPS_UNIQUE_BREAKPOINT ();
   void *ad = dlsym (dlh, symbuf);
   if (ad)
     {
       yrps_initfun_t *inif = (yrps_initfun_t *) ad;
+      YRPS_UNIQUE_BREAKPOINT ();
       (*inif) ();
-    };
+    }
+  else
+    {
+      fprintf (stderr, "%s git %s no function named %s [%s:%d] (%s)!\n",
+	       yrps_argv[0], parse_yrps_id, symbuf, __FILE__, __LINE__ - 1,
+	       dlerror ());
+      YRPS_UNIQUE_BREAKPOINT ();
+    }
 }				/* end load_initial_module_yrps */
 
 void
