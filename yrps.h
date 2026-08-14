@@ -143,6 +143,10 @@ struct yrps_pairvect_st;
     uint32_t vflag;				\
   }
 
+#define YRPS_VALUE_FIELDS \
+  YRPS_PREFIX_FIELDS;     \
+  int32_t vindex
+
 struct yrps_prefix_st
 {
   YRPS_PREFIX_FIELDS;
@@ -150,31 +154,31 @@ struct yrps_prefix_st
 
 struct yrps_string_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   const char v_str[];
 };
 
 struct yrps_intvec_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   const int64_t v_intvec[];
 };
 
 struct yrps_dblvec_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   const double v_dblvec[];
 };
 
 struct yrps_objvec_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   struct yrps_object_st *v_objvec[];
 };
 
 struct yrps_pairvect_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   /// the pairs should be ordered by the o_id of objects
   struct
   {
@@ -191,14 +195,14 @@ struct yrps_dictpair_st
 
 struct yrps_dictvect_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   /// the pairs should be ordered by the p_name
   struct yrps_dictpair_st v_dictvec[];
 };
 
 struct yrps_value_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   union
   {
     const char v_str[];
@@ -210,7 +214,7 @@ struct yrps_value_st
 
 struct yrps_object_st
 {
-  YRPS_PREFIX_FIELDS;
+  YRPS_VALUE_FIELDS;
   int64_t o_id;			/* should never be updated */
   pthread_mutex_t o_mtx;
   int32_t o_nbpair;

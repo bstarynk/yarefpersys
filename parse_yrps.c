@@ -268,10 +268,12 @@ int
 add_value_yrps (struct yrps_value_st *v)
 {
   assert (v);
+  assert (v->vkind > Kyrps__None && v->vkind < Kyrps__Internal);
   if (lenvalvec_yrps >= sizvalvec_yrps)
     {
       int newsiz = ((4 * lenvalvec_yrps / 3 + 10) & 0x1f) + 1;
       assert (newsiz > sizvalvec_yrps);
+      assert (newsiz < (2<<30));
       struct yrps_value_st **oldvec = valvec_yrps;
       valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
       if (oldvec)
@@ -281,7 +283,10 @@ add_value_yrps (struct yrps_value_st *v)
 	  free (oldvec);
 	};
     };
-  valvec_yrps[lenvalvec_yrps++] = v;
+  int vix = ++lenvalvec_yrps;
+  valvec_yrps[vix] = v;
+  v->vindex = vix;
+  assert(vix > 0 && vix < (2<<30));
 }				/* end add_value_yrps */
 
 
