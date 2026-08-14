@@ -204,6 +204,7 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
       if (!fgets (linbuf, sizeof (linbuf), f))
 	break;
       long int i = 0;
+      void *valad = NULL;
       int p = -1;
       char typbuf[16];
       memset (typbuf, 0, sizeof (typbuf));
@@ -214,7 +215,7 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
 	  char valnambuf[32];
 	  memset (valnambuf, 0, sizeof (valnambuf));
 	  snprintf (valnambuf, sizeof (valnambuf), "yrps_v%ld", i);
-	  void *valad = dlsym (yrps_proghdl, valnambuf);
+	  valad = dlsym (yrps_proghdl, valnambuf);
 	  if (!valad)
 	    {
 	      YRPS_PRINTFAIL ("%s failed to dlsym %s [%s:%d] : %s\n",
@@ -232,8 +233,19 @@ parse_generated_c_file_yrps (const char *dirpath, const char *entnam)
 	       (linbuf, " struct yrps_object_st yrps_ob%ld =%n", &i,
 		&p) > 2 && p > 0 && i > 0)
 	{
-#warning should call yrps_make_object
-	  (void) yrps_make_object;
+	  assert (valad != NULL);
+	  struct yrps_object_st *protob = (struct yrps_object_st *) valad;
+	  assert (protob->vkind == Kyrps_object);
+	  assert (protob->o_id == i);
+	  struct yrps_object_st *pob = yrps_make_object ((int64_t) i);
+	  YRPS_UNIQUE_BREAKPOINT ();
+	  if (protob->o_nbpair > 0)
+	    {
+
+	    };
+	  if (protob->o_nbval > 0)
+	    {
+	    };
 	}
     }
   while (!feof (f));

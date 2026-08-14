@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <unistr.h>
 #include <dirent.h>
 #include <readline/readline.h>
@@ -67,6 +68,9 @@
 #define YRPS_LINECOUNTMAX 8192
 #endif
 
+#ifndef YRPS_MAXDATASIZE
+#define YRPS_MAXDATASIZE (4<<20)
+#endif /*YRPS_MAXDATASIZE */
 
 /// main arguments
 /*€ argument du main et du programme */
@@ -158,6 +162,7 @@ struct yrps_string_st
   const char v_str[];
 };
 
+
 struct yrps_intvec_st
 {
   YRPS_VALUE_FIELDS;
@@ -229,6 +234,12 @@ struct yrps_object_st
 extern struct yrps_object_st *yrps_make_object (int64_t oid);
 #define YRPS_NEW_OBJECT() yrps_make_object((int64_t)0)
 
+extern struct yrps_string_st *yrps_make_string (const char *);
+extern struct yrps_string_st *yrps_format_string (const char *fmt, ...)
+  __attribute__((format (printf, 1, 2)));
+
+extern struct yrps_intvec_st *yrps_make_intvec (unsigned nbint,
+						int64_t * intarr);
 
 extern int yrps_register_object (struct yrps_object_st *o);
 extern int yrps_register_value (struct yrps_value_st *v);
