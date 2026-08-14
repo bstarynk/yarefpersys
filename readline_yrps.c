@@ -21,34 +21,93 @@
 
 const char readline_yrps_id[] = YRPS_ID;
 
-static char *readline_completion_yrps (const char *, int);
+#define RL_PROMPTSIZE_YRPS 32
+static char readline_prompt_yrps[RL_PROMPTSIZE_YRPS] = "?°:";
 
+static pthread_mutex_t readline_mtxpr_yrps =
+  PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+static char *readline_completion_yrps (const char *, int);
+static char **readline_attempted_completion_yrps (const char *, int, int);
 void
 yrps_init_readline (void)
 {
 #warning unimplemented yrps_init_readline
   YRPS_UNIQUE_BREAKPOINT ();
   fprintf (stderr, "yrps_init_readline [%s:%d] unimplemented\n",
-	   __FILE__, __LINE__ - 1);
+           __FILE__, __LINE__ - 1);
   rl_completion_entry_function = readline_completion_yrps;
-}				/* end yrps_init_readline */
+  rl_attempted_completion_function = readline_attempted_completion_yrps;
+}                               /* end yrps_init_readline */
 
 
 char *
 readline_completion_yrps (const char *str, int key)
 {
+  if (!strcmp (str, "euro"))
+    {
+      YRPS_UNIQUE_BREAKPOINT ();
+    }
+  fputc ('\n', stderr);         /// temporary
   YRPS_UNIQUE_BREAKPOINT ();
-  YRPS_PRINTFAIL ("readline_completion_yrps str=%s key=%d unimplemented\n",
-		  str, key);
-}				/* end readline_completion_yrps */
+  YRPS_PRINTFAIL
+    ("readline_completion_yrps str=%s key=%d='%c' unimplemented\n", str, key,
+     (char) key);
+}                               /* end readline_completion_yrps */
 
+
+char **
+readline_attempted_completion_yrps (const char *text, int start, int end)
+{
+  char **res = NULL;
+  YRPS_UNIQUE_BREAKPOINT ();
+  YRPS_PRINTFAIL ("readline_attempted_completion_yrps text=%s "
+                  "start=%d end=%d\n", text, start, end);
+  return res;
+}                               /* end readline_attempted_completion_yrps */
+
+void
+yrps_set_readline_prompt (const char *ps)
+{
+  pthread_mutex_lock (&readline_mtxpr_yrps);
+  memset (readline_prompt_yrps, 0, sizeof (readline_prompt_yrps));
+  if (ps)
+    {
+      assert (strlen (ps) < sizeof (readline_prompt_yrps));
+      strncpy (readline_prompt_yrps, ps, sizeof (readline_prompt_yrps) - 1);
+    }
+  pthread_mutex_unlock (&readline_mtxpr_yrps);
+}
 
 void
 yrps_readline_loop (void)
 {
+  char prbuf[RL_PROMPTSIZE_YRPS];
+  char *r = NULL;
+  memset (prbuf, 0, sizeof (prbuf));
+  bool again = false;
+  YRPS_UNIQUE_BREAKPOINT ();
+  do
+    {
+      r = NULL;
+      pthread_mutex_lock (&readline_mtxpr_yrps);
+      memcpy (prbuf, readline_prompt_yrps, RL_PROMPTSIZE_YRPS - 1);
+      pthread_mutex_unlock (&readline_mtxpr_yrps);
+      if (!prbuf[0])
+        break;
+      r = readline (prbuf);
+      if (!r)
+        break;
+#warning should parse somehow the read line
+      fprintf (stderr, "readline got %s [%s:%d]\n", r, __FILE__,
+               __LINE__ - 1);
+      free (r);
+      r = NULL;
+    }
+  while (again);
   YRPS_PRINTFAIL ("unimplemented yrps_readline_loop git %s\n",
-		  readline_yrps_id);
+                  readline_yrps_id);
 #warning unimplemented yrps_readline_loop
-}				/* end yrps_readline_loop */
+}                               /* end yrps_readline_loop */
 
 ///// eof readline_yrps.c [€fin du fichier]
