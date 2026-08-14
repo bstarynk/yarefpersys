@@ -214,6 +214,7 @@ struct yrps_value_st
     const int64_t v_intvec[];
     const double v_dblvec[];
     const struct yrps_object_st *v_obvec[];
+    const struct yrps_dictpair_st *v_dictvec[];
   };
 };
 
@@ -239,7 +240,9 @@ extern struct yrps_string_st *yrps_format_string (const char *fmt, ...)
   __attribute__((format (printf, 1, 2)));
 
 extern struct yrps_intvec_st *yrps_make_intvec (unsigned nbint,
-						int64_t * intarr);
+						const int64_t * intarr);
+extern struct yrps_dblvec_st *yrps_make_dblvec (unsigned nbdbl,
+						const double *dblarr);
 
 extern int yrps_register_object (struct yrps_object_st *o);
 extern int yrps_register_value (struct yrps_value_st *v);

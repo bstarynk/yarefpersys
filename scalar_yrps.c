@@ -76,7 +76,7 @@ end:
 }				/* end yrps_format_string */
 
 struct yrps_intvec_st *
-yrps_make_intvec (unsigned nbint, int64_t *intarr)
+yrps_make_intvec (unsigned nbint, const int64_t *intarr)
 {
   struct yrps_intvec_st *piv = NULL;
   if (!intarr)
@@ -97,10 +97,10 @@ yrps_make_intvec (unsigned nbint, int64_t *intarr)
 }				/* end yrps_make_intvec */
 
 struct yrps_dblvec_st *
-yrps_make_dblvec (unsigned nbdbl, int64_t *intarr)
+yrps_make_dblvec (unsigned nbdbl, const double *dblarr)
 {
   struct yrps_dblvec_st *pdv = NULL;
-  if (!intarr)
+  if (!dblarr)
     nbdbl = 0;
   if (sizeof (struct yrps_dblvec_st) + nbdbl * sizeof (int64_t) >
       (size_t) YRPS_MAXDATASIZE)
@@ -112,9 +112,10 @@ yrps_make_dblvec (unsigned nbdbl, int64_t *intarr)
   pdv->vmark = 0;
   pdv->vlen = (int32_t) nbdbl;
   for (int ix = 0; ix < (int) nbdbl; ix++)
-    ((double *) pdv->v_dblvec)[ix] = intarr[ix];
+    ((double *) pdv->v_dblvec)[ix] = dblarr[ix];
   yrps_register_value ((struct yrps_value_st *) pdv);
   return pdv;
 }				/* end yrps_make_dblvec */
+
 
 ///// eof scalar_yrps.c [€fin du fichier]
