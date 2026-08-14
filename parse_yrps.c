@@ -283,3 +283,6 @@ add_value_yrps (struct yrps_value_st *v)
     };
   valvec_yrps[lenvalvec_yrps++] = v;
 }				/* end add_value_yrps */
+
+
+///// eof parse_yrps.c [€fin du fichier]
