@@ -34,6 +34,7 @@ yrps_init_readline (void)
 {
 #warning unimplemented yrps_init_readline
   YRPS_UNIQUE_BREAKPOINT ();
+  rl_readline_name = "yarefpersys";
   fprintf (stderr, "yrps_init_readline [%s:%d] unimplemented\n",
            __FILE__, __LINE__ - 1);
   rl_completion_entry_function = readline_completion_yrps;
@@ -51,8 +52,8 @@ readline_completion_yrps (const char *str, int key)
   fputc ('\n', stderr);         /// temporary
   YRPS_UNIQUE_BREAKPOINT ();
   YRPS_PRINTFAIL
-    ("readline_completion_yrps str=%s key=%d='%c' unimplemented\n", str, key,
-     (char) key);
+    ("readline_completion_yrps str=%s key=%d='%c' linbuf='%s' unimplemented\n",
+     str, key, (char) key, rl_line_buffer);
 }                               /* end readline_completion_yrps */
 
 
@@ -62,7 +63,8 @@ readline_attempted_completion_yrps (const char *text, int start, int end)
   char **res = NULL;
   YRPS_UNIQUE_BREAKPOINT ();
   YRPS_PRINTFAIL ("readline_attempted_completion_yrps text=%s "
-                  "start=%d end=%d\n", text, start, end);
+                  "start=%d end=%d rlbuf=%s\n", text, start, end,
+		 rl_line_buffer);
   return res;
 }                               /* end readline_attempted_completion_yrps */
 
@@ -99,7 +101,7 @@ yrps_readline_loop (void)
       if (!r)
         break;
 #warning should parse somehow the read line
-      fprintf (stderr, "readline got %s [%s:%d]\n", r, __FILE__,
+      fprintf (stderr, "\n..readline got %s [%s:%d]\n", r, __FILE__,
                __LINE__ - 1);
       free (r);
       r = NULL;
