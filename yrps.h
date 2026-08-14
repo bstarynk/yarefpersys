@@ -95,21 +95,28 @@ void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 fprintf(stderr, Fmt, __VA_ARGS__); YRPS_FAIL(); } while(0)
 
 #ifdef YRPS_THIS_MODULE
-#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
-    asm volatile ("__" YRPS_THIS_MODULE "_brk_" #Lin "_c" #Cnt  \
-      ": nop; nop\n");        \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+
+#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {     \
+    asm volatile ("nop; nop; nop; nop; nop; nop;\n");   \
+    asm volatile ("__" YRPS_THIS_MODULE "_mbrk_" #Lin   \
+      "_c" #Cnt  ": nop; nop\n");                       \
+    asm volatile ("nop; nop; nop; nop; nop; nop; \n");  \
+    asm volatile ("nop; nop; nop; nop; nop; nop; \n");  \
+    asm volatile ("/*yrps°uniqbrk°µ" #Lin #Fil "*/\n"); \
  } while(0)
+
+
 #else
-#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
-    asm volatile ("__" YRPS_THIS_BASE "_brk_" #Lin "_c" #Cnt  \
-      ": nop; nop\n");        \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+
+#define YRPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {     \
+    asm volatile ("nop; nop; nop; nop; nop; nop;\n");   \
+    asm volatile ("__" YRPS_THIS_BASE "_brk_" #Lin      \
+                  "_c" #Cnt ": nop; nop\n");            \
+    asm volatile ("nop; nop; nop; nop; nop; nop;\n");   \
+    asm volatile ("nop; nop; nop; nop; nop; nop;\n");   \
+    asm volatile ("/*yrps°uniqbrk°@" #Lin #Fil "*/\n"); \
  } while(0)
+
 #endif
 
 
@@ -139,12 +146,12 @@ struct yrps_object_st;
 struct yrps_value_st;
 struct yrps_pairvect_st;
 
-#define YRPS_PREFIX_FIELDS			\
-  enum yrps_kind_en vkind;			\
-  unsigned char vmark;				\
-  union {					\
-    uint32_t vlen;		       		\
-    uint32_t vflag;				\
+#define YRPS_PREFIX_FIELDS                      \
+  enum yrps_kind_en vkind;                      \
+  unsigned char vmark;                          \
+  union {                                       \
+    uint32_t vlen;                              \
+    uint32_t vflag;                             \
   }
 
 #define YRPS_VALUE_FIELDS \
@@ -194,7 +201,7 @@ struct yrps_pairvect_st
 
 struct yrps_dictpair_st
 {
-  const char *p_name;		/* strduped */
+  const char *p_name;           /* strduped */
   struct yrps_object_st *p_nmob;
 };
 
@@ -221,15 +228,15 @@ struct yrps_value_st
 struct yrps_object_st
 {
   YRPS_VALUE_FIELDS;
-  int64_t o_id;			/* should never be updated */
+  int64_t o_id;                 /* should never be updated */
   pthread_mutex_t o_mtx;
   int32_t o_nbpair;
   int32_t o_nbval;
   int32_t o_flags;
   int32_t o_state;
   void *o_funad;
-  struct yrps_pairvect_st *o_pairv;	// vector ordered by o_id
-  struct yrps_value_st *o_valseq;	//
+  struct yrps_pairvect_st *o_pairv;     // vector ordered by o_id
+  struct yrps_value_st *o_valseq;       //
 };
 
 extern struct yrps_object_st *yrps_make_object (int64_t oid);
@@ -240,9 +247,9 @@ extern struct yrps_string_st *yrps_format_string (const char *fmt, ...)
   __attribute__((format (printf, 1, 2)));
 
 extern struct yrps_intvec_st *yrps_make_intvec (unsigned nbint,
-						const int64_t * intarr);
+                                                const int64_t * intarr);
 extern struct yrps_dblvec_st *yrps_make_dblvec (unsigned nbdbl,
-						const double *dblarr);
+                                                const double *dblarr);
 
 extern int yrps_register_object (struct yrps_object_st *o);
 extern int yrps_register_value (struct yrps_value_st *v);
@@ -283,5 +290,9 @@ extern int yrps_rank_of_prime (int64_t prim);
 // initialize readline when both stdin & stdout are ttys
 /*€ initialisation de readline quand stdin & stdout sont des terminaux */
 extern void yrps_init_readline (void);
+
+// readline based command reader
+/*€ boucle de lecture des commandes via readline */
+extern void yrps_readline_loop (void);
 #endif //YRPS_INCLUDED
 ///// eof yrps.h [€fin du fichier]

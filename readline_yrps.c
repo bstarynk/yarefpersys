@@ -42,4 +42,13 @@ readline_completion_yrps (const char *str, int key)
 		  str, key);
 }				/* end readline_completion_yrps */
 
+
+void
+yrps_readline_loop (void)
+{
+  YRPS_PRINTFAIL ("unimplemented yrps_readline_loop git %s\n",
+		  readline_yrps_id);
+#warning unimplemented yrps_readline_loop
+}				/* end yrps_readline_loop */
+
 ///// eof readline_yrps.c [€fin du fichier]

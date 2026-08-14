@@ -163,7 +163,16 @@ main (int argc, char **argv)
     strncpy (yrps_dirpath, YRPS_SRCDIR, sizeof (yrps_dirpath) - 1);
   yrps_load_state_from_directory (yrps_dirpath);
   if (isatty (STDIN_FILENO) && isatty (STDOUT_FILENO))
-    yrps_init_readline ();
+    {
+      yrps_init_readline ();
+      yrps_readline_loop ();
+    }
+  else
+    {
+      YRPS_PRINTFAIL ("unimplmented on non terminal %s %s\n",
+		      isatty (STDIN_FILENO) ? "input" : "!",
+		      isatty (STDIN_FILENO) ? "output" : "!");
+    };
   return 0;
 #warning nearly empty main
 }				/* end of main */
