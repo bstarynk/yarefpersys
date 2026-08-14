@@ -48,7 +48,7 @@ yrps_find_object (int64_t oid)
     goto end;
   if (!buckobarr_yrps)
     {
-      int64_t newsiz = 31;	/* it is prime */
+      int64_t newsiz = 31;      /* it is prime */
       buckobarr_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_calloc *));
       sizbuckobarr_yrps = newsiz;
       assert (cntob_yrps == 0);
@@ -61,7 +61,7 @@ yrps_find_object (int64_t oid)
 end:
   pthread_mutex_unlock (&mtxob_yrps);
   return pob;
-}				/* end yrps_find_object */
+}                               /* end yrps_find_object */
 
 struct yrps_object_st *
 yrps_make_object (int64_t oid)
@@ -72,16 +72,16 @@ yrps_make_object (int64_t oid)
     {
       pob = yrps_find_object (oid);
       if (pob)
-	return pob;
+        return pob;
       else
-	oid = 0;
+        oid = 0;
     };
   while (!oid)
     {
       pthread_mutex_lock (&mtxob_yrps);
       int64_t newoid = (random () << 24) ^ (random ());
       if (!yrps_find_object (newoid))
-	oid = newoid;
+        oid = newoid;
       pthread_mutex_unlock (&mtxob_yrps);
     };
   pob = YRPS_MALLOC (sizeof (struct yrps_object_st));
@@ -97,7 +97,7 @@ yrps_make_object (int64_t oid)
   pob->o_valseq = (struct yrps_value_st *) NULL;
   pob->vindex = yrps_register_object (pob);
   return pob;
-}				/* end yrps_make_object */
+}                               /* end yrps_make_object */
 
 
 int
@@ -112,7 +112,7 @@ yrps_register_object (struct yrps_object_st *pob)
   pthread_mutex_lock (&mtxob_yrps);
   if (!buckobarr_yrps)
     {
-      int64_t newsiz = 31;	/* it is prime */
+      int64_t newsiz = 31;      /* it is prime */
       buckobarr_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_calloc *));
       sizbuckobarr_yrps = newsiz;
       assert (cntob_yrps == 0);
@@ -123,40 +123,40 @@ yrps_register_object (struct yrps_object_st *pob)
   pbucket = buckobarr_yrps[bucknum];
   if (!pbucket)
     {
-      unsigned bucksiz = 13;	/* a prime number */
+      unsigned bucksiz = 13;    /* a prime number */
       pbucket = YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
-			     + bucksiz * sizeof (void *));
+                             + bucksiz * sizeof (void *));
       pbucket->vkind = Kyrps_objbucket;
       pbucket->vlen = bucksiz;
       pbucket->b_buckcount = 1;
       pbucket->b_objvec[0] = pob;
       for (unsigned bix = 1; bix < bucksiz; bix++)
-	pbucket->b_objvec[bix] = NULL;
+        pbucket->b_objvec[bix] = NULL;
       buckobarr_yrps[bucknum] = pbucket;
     }
   else if (5 * pbucket->b_buckcount > 4 * pbucket->vlen)
     {
       unsigned newbucksiz = yrps_prime_above ((9 * pbucket->b_buckcount) / 8);
       if (!newbucksiz)
-	YRPS_PRINTFAIL ("too many buckets for %d object buckets", newbucksiz);
+        YRPS_PRINTFAIL ("too many buckets for %d object buckets", newbucksiz);
       struct yrps_objbucket_st *pnewbucket =
-	YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
-		     + newbucksiz * sizeof (void *));
+        YRPS_MALLOC (sizeof (struct yrps_objbucket_st)
+                     + newbucksiz * sizeof (void *));
       pnewbucket->vlen = newbucksiz;
       unsigned oldbucksize = pbucket->vlen;
       for (unsigned oldix = 0; oldix < oldbucksize; oldix++)
-	if (pbucket->b_objvec[oldix])
-	  {
-	    pnewbucket->b_objvec[pnewbucket->b_buckcount++] =
-	      pbucket->b_objvec[oldix];
-	  };
+        if (pbucket->b_objvec[oldix])
+          {
+            pnewbucket->b_objvec[pnewbucket->b_buckcount++] =
+              pbucket->b_objvec[oldix];
+          };
     }
   pob->vindex = bucknum;
   goto end;
 end:
   pthread_mutex_unlock (&mtxob_yrps);
   return oix;
-}				/* end yrps_register_object */
+}                               /* end yrps_register_object */
 
 int
 yrps_register_value (struct yrps_value_st *v)
@@ -176,11 +176,11 @@ yrps_register_value (struct yrps_value_st *v)
       struct yrps_value_st **oldvec = valvec_yrps;
       valvec_yrps = YRPS_CALLOC (newsiz, sizeof (struct yrps_value_st *));
       if (oldvec)
-	{
-	  memcpy (valvec_yrps, oldvec,
-		  lenvalvec_yrps * sizeof (struct yrps_value_st *));
-	  free (oldvec);
-	};
+        {
+          memcpy (valvec_yrps, oldvec,
+                  lenvalvec_yrps * sizeof (struct yrps_value_st *));
+          free (oldvec);
+        };
     };
   vix = ++lenvalvec_yrps;
   valvec_yrps[vix] = v;
@@ -190,6 +190,6 @@ yrps_register_value (struct yrps_value_st *v)
 end:
   pthread_mutex_unlock (&mtxval_yrps);
   return vix;
-}				/* end yrps_register_value */
+}                               /* end yrps_register_value */
 
 #warning objval_yrps.c needs a lot of code
