@@ -40,7 +40,7 @@ yrps_make_string (const char *buf)
   strcpy ((char *) pstr->v_str, buf);
   yrps_register_value ((struct yrps_value_st *) pstr);
   return pstr;
-}				/* end yrps_make_string */
+}                               /* end yrps_make_string */
 
 struct yrps_string_st *
 yrps_format_string (const char *fmt, ...)
@@ -55,17 +55,17 @@ yrps_format_string (const char *fmt, ...)
     {
       memset (locbuf, 0, sizeof (locbuf));
       if (vsnprintf (locbuf, sizeof (locbuf) - 2, fmt, arglist) <
-	  (int) sizeof (locbuf))
-	{
-	  pstr = yrps_make_string (locbuf);
-	  goto end;
-	}
+          (int) sizeof (locbuf))
+        {
+          pstr = yrps_make_string (locbuf);
+          goto end;
+        }
     }
   else
     {
       int n = vasprintf (&buf, fmt, arglist);
       if (n < 0 || !buf)
-	YRPS_PRINTFAIL ("vasprintf failed for format %s", fmt);
+        YRPS_PRINTFAIL ("vasprintf failed for format %s", fmt);
       pstr = yrps_make_string (buf);
     };
 end:
@@ -73,7 +73,7 @@ end:
   if (buf)
     free (buf);
   return pstr;
-}				/* end yrps_format_string */
+}                               /* end yrps_format_string */
 
 struct yrps_intvec_st *
 yrps_make_intvec (unsigned nbint, const int64_t *intarr)
@@ -86,7 +86,7 @@ yrps_make_intvec (unsigned nbint, const int64_t *intarr)
     YRPS_PRINTFAIL ("too big intvect of %d int64_t", nbint);
   piv =
     YRPS_MALLOC (sizeof (struct yrps_intvec_st) +
-		 (nbint + 1) * sizeof (int64_t));
+                 (nbint + 1) * sizeof (int64_t));
   piv->vkind = Kyrps_intvect;
   piv->vmark = 0;
   piv->vlen = (int32_t) nbint;
@@ -94,7 +94,7 @@ yrps_make_intvec (unsigned nbint, const int64_t *intarr)
     ((int64_t *) piv->v_intvec)[ix] = intarr[ix];
   yrps_register_value ((struct yrps_value_st *) piv);
   return piv;
-}				/* end yrps_make_intvec */
+}                               /* end yrps_make_intvec */
 
 struct yrps_dblvec_st *
 yrps_make_dblvec (unsigned nbdbl, const double *dblarr)
@@ -107,7 +107,7 @@ yrps_make_dblvec (unsigned nbdbl, const double *dblarr)
     YRPS_PRINTFAIL ("too big dblvect of %d int64_t", nbdbl);
   pdv =
     YRPS_MALLOC (sizeof (struct yrps_dblvec_st) +
-		 (nbdbl + 1) * sizeof (int64_t));
+                 (nbdbl + 1) * sizeof (int64_t));
   pdv->vkind = Kyrps_doublevect;
   pdv->vmark = 0;
   pdv->vlen = (int32_t) nbdbl;
@@ -115,7 +115,7 @@ yrps_make_dblvec (unsigned nbdbl, const double *dblarr)
     ((double *) pdv->v_dblvec)[ix] = dblarr[ix];
   yrps_register_value ((struct yrps_value_st *) pdv);
   return pdv;
-}				/* end yrps_make_dblvec */
+}                               /* end yrps_make_dblvec */
 
 
 ///// eof scalar_yrps.c [€fin du fichier]
