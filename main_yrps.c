@@ -40,9 +40,9 @@ yrps_readable_directory (const char *dn)
   if (stat (dn, &dst))
     return false;
   if ((dst.st_mode & S_IFMT) == S_IFDIR)
-    return ((dst.st_mode & 0500) != 0);	//0500 is r-x------
+    return ((dst.st_mode & 0500) != 0); //0500 is r-x------
   return false;
-}				/* end yrps_readable_directory */
+}                               /* end yrps_readable_directory */
 
 static void
 show_version_yrps (void)
@@ -51,7 +51,7 @@ show_version_yrps (void)
   printf ("\t curl version is %s\n", curl_version ());
   printf ("\t readline version is %s\n", rl_library_version);
   printf ("\t see github.com/bstarynk/yarefpersys\n");
-}				/* end show_version_yrps */
+}                               /* end show_version_yrps */
 
 static void
 show_help_yrps (void)
@@ -61,33 +61,33 @@ show_help_yrps (void)
   printf ("\t --help                 # gives this help\n");
   printf ("\t see refpersys.org and github.com/RefPerSys\n");
   printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
-	  __FILE__, __LINE__ - 1);
+          __FILE__, __LINE__ - 1);
   printf ("\t °yrps_prefix_st size %d align %d\n",
-	  (int) sizeof (struct yrps_prefix_st),
-	  (int) alignof (struct yrps_prefix_st));
+          (int) sizeof (struct yrps_prefix_st),
+          (int) alignof (struct yrps_prefix_st));
   printf ("\t °yrps_value_st size %d align %d\n",
-	  (int) sizeof (struct yrps_value_st),
-	  (int) alignof (struct yrps_value_st));
+          (int) sizeof (struct yrps_value_st),
+          (int) alignof (struct yrps_value_st));
   printf ("\t °yrps_pairvect_st size %d align %d\n",
-	  (int) sizeof (struct yrps_pairvect_st),
-	  (int) alignof (struct yrps_pairvect_st));
+          (int) sizeof (struct yrps_pairvect_st),
+          (int) alignof (struct yrps_pairvect_st));
   printf ("\t °yrps_dictvect_st size %d align %d\n",
-	  (int) sizeof (struct yrps_dictvect_st),
-	  (int) alignof (struct yrps_dictvect_st));
+          (int) sizeof (struct yrps_dictvect_st),
+          (int) alignof (struct yrps_dictvect_st));
   printf ("\t °yrps_object_st size %d align %d\n",
-	  (int) sizeof (struct yrps_object_st),
-	  (int) alignof (struct yrps_object_st));
+          (int) sizeof (struct yrps_object_st),
+          (int) alignof (struct yrps_object_st));
 #warning incomplete --help code
-}				/* end show_help_yrps */
+}                               /* end show_help_yrps */
 
 void
 yrps_fail_at (const char *fil, int lin)
 {
   fprintf (stderr, "%s failing at %s:%d (git %s)\n",
-	   yrps_argv[0], fil, lin, YRPS_ID);
+           yrps_argv[0], fil, lin, YRPS_ID);
   fflush (NULL);
   abort ();
-}				/* end yrps_fail_at */
+}                               /* end yrps_fail_at */
 
 
 void *
@@ -101,11 +101,11 @@ yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin)
   if (!p)
     {
       fprintf (stderr, "%s calloc failed at %s:%d (%s)\n",
-	       yrps_argv[0], fil, lin, strerror (errno));
+               yrps_argv[0], fil, lin, strerror (errno));
       YRPS_FAIL ();
     };
   return p;
-}				/* end yrps_calloc_at */
+}                               /* end yrps_calloc_at */
 
 void *
 yrps_malloc_at (unsigned size, const char *fil, int lin)
@@ -116,11 +116,11 @@ yrps_malloc_at (unsigned size, const char *fil, int lin)
   if (!p)
     {
       fprintf (stderr, "%s malloc failed at %s:%d (%s)\n",
-	       yrps_argv[0], fil, lin, strerror (errno));
+               yrps_argv[0], fil, lin, strerror (errno));
       YRPS_FAIL ();
     };
   return p;
-}				/* end yrps_malloc_at */
+}                               /* end yrps_malloc_at */
 
 void
 handle_prog_arguments_yrps (int argc, const char **argv)
@@ -131,21 +131,25 @@ handle_prog_arguments_yrps (int argc, const char **argv)
       const char *curarg = argv[aix];
       assert (curarg != NULL);
       if (!strcmp (curarg, "--version"))
-	show_version_yrps ();
+        show_version_yrps ();
       else if (!strcmp (curarg, "--help"))
-	show_help_yrps ();
+        show_help_yrps ();
       else if (sscanf (curarg, "--state=%n", &p) > 0 && p > 0)
-	{
-	  const char *statdir = curarg + p;
-	  YRPS_UNIQUE_BREAKPOINT ();
-	  assert (statdir && statdir[0]);
-	  struct stat ds = { };
-	  if (!stat (statdir, &ds))
-	    YRPS_PRINTFAIL ("bad state %s (%s)", statdir, strerror (errno));
-	}
+        {
+          const char *statdir = curarg + p;
+          YRPS_UNIQUE_BREAKPOINT ();
+          assert (statdir && statdir[0]);
+          struct stat ds = { };
+          if (stat (statdir, &ds))
+            YRPS_PRINTFAIL ("bad state %s (%s)", statdir, strerror (errno));
+          if ((ds.st_mode & S_IFMT) != S_IFDIR)
+            YRPS_PRINTFAIL ("non-directory state %s (%s)", statdir,
+                            strerror (errno));
+          strncpy (yrps_dirpath, statdir, sizeof (yrps_dirpath));
+        }
 #warning incomplete handle_prog_arguments_yrps loop
     }
-}				/* end handle_prog_arguments_yrps */
+}                               /* end handle_prog_arguments_yrps */
 
 int
 main (int argc, char **argv)
@@ -170,12 +174,12 @@ main (int argc, char **argv)
   else
     {
       YRPS_PRINTFAIL ("unimplmented on non terminal %s %s\n",
-		      isatty (STDIN_FILENO) ? "input" : "!",
-		      isatty (STDIN_FILENO) ? "output" : "!");
+                      isatty (STDIN_FILENO) ? "input" : "!",
+                      isatty (STDIN_FILENO) ? "output" : "!");
     };
   return 0;
 #warning nearly empty main
-}				/* end of main */
+}                               /* end of main */
 
 
 
