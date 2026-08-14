@@ -246,10 +246,20 @@ typedef void yrps_initfun_t (void);
 extern void yrps_load_state_from_directory (const char *dirpath);
 
 
-// return 0 if not found
+/*€ les fonctions sur certains nombres premiers renvoient 0 si pas trouvé */
+// prime number above or below a given integer, give 0 if none found
 extern int64_t yrps_prime_above (int64_t l);
 extern int64_t yrps_prime_below (int64_t l);
+
+// the prime number of a given rank (in some private array of primes) or else 0
+/*€ nombre premier de rang donné (dans une table privée de premiers) sinon 0 */
 extern int64_t yrps_prime_of_rank (int rk);
 // return -1 for non prime or unknown prime
+/*€ renvoie -1 pour un nombre non premier ou pas premier connu dans la table */
 extern int yrps_rank_of_prime (int64_t prim);
+
+// initialize readline when both stdin & stdout are ttys
+/*€ initialisation de readline quand stdin & stdout sont des terminaux */
+extern void yrps_init_readline (void);
 #endif //YRPS_INCLUDED
+///// eof yrps.h [€fin du fichier]
