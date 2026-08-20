@@ -60,6 +60,7 @@ show_help_yrps (void)
   printf ("%s usage (from %s:%d):\n", yrps_argv[0], __FILE__, __LINE__);
   printf ("\t --version              # gives version information\n");
   printf ("\t --help                 # gives this help\n");
+  printf ("\t --debug | -D           # enable debugging messages\n");
   printf ("\t see refpersys.org and github.com/RefPerSys\n");
   printf ("\t this %s:%d is in github.com/bstarynk/yarefpersys\n",
           __FILE__, __LINE__ - 1);
@@ -135,6 +136,8 @@ handle_prog_arguments_yrps (int argc, const char **argv)
         show_version_yrps ();
       else if (!strcmp (curarg, "--help"))
         show_help_yrps ();
+      else if (!strcmp (curarg, "--debug") || !strcmp (curarg, "-D"))
+        yrps_debugging = true;
       else if (sscanf (curarg, "--state=%n", &p) > 0 && p > 0)
         {
           const char *statdir = curarg + p;
