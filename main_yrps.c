@@ -26,6 +26,7 @@ int yrps_argc;
 char *const *yrps_argv;
 void *yrps_proghdl;
 char yrps_dirpath[YRPS_PATHMAX] = YRPS_SRCDIR;
+bool yrps_debugging;
 
 static void handle_prog_arguments_yrps (int, const char **);
 

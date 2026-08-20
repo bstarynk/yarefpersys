@@ -81,6 +81,11 @@ extern char *const *yrps_argv;
 /*€ poignée dlopen vers l executable */
 extern void *yrps_proghdl;
 
+/// debugging flag
+/*€ drapeau pour message de debugging */
+extern bool yrps_debugging;
+
+
 /// memory allocation macros
 /*€ macros d'allocation memoire */
 void *yrps_calloc_at (long nbelem, unsigned size, const char *fil, int lin);
