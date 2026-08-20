@@ -29,6 +29,8 @@ static pthread_mutex_t readline_mtxpr_yrps =
 
 static char *readline_completion_yrps (const char *, int);
 static char **readline_attempted_completion_yrps (const char *, int, int);
+static void readline_replace_yrps(const char*init, int start, int end, const char*replac);
+
 void
 yrps_init_readline (void)
 {
@@ -66,9 +68,11 @@ readline_attempted_completion_yrps (const char *text, int start, int end)
     {
       if (!strcmp (text, "euro"))
 	{
+	  YRPS_UNIQUE_BREAKPOINT();
 	  YRPS_PRINTFAIL ("readline_attempted_completion_yrps € text=%s "
 			  "start=%d end=%d rlbuf=%s\n", text, start, end,
 			  rl_line_buffer);
+	  readline_replace_yrps("\euro", start-1, end, "€");
 	  /// TODO we probably want to complete \eu as €
 	}
     }
@@ -122,4 +126,20 @@ yrps_readline_loop (void)
 #warning unimplemented yrps_readline_loop
 }				/* end yrps_readline_loop */
 
+
+void
+readline_replace_yrps(const char*init, int start, int end, const char*replac)
+{
+  char*oldrlbuf = NULL;
+  char*newrlbuf = NULL;
+  assert(init != NULL);
+  assert(replac != NULL);
+  assert(start < end);
+  pthread_mutex_lock (&readline_mtxpr_yrps);
+  YRPS_PRINTFAIL("unimplemented readline_replace_yrps init=%s start=%d\n"
+		 " end=%d replac=%s rl_line_buffer=%s\n",
+		 init, start, end, replac, rl_line_buffer);
+#warning unimplemented readline_replace_yrps
+  pthread_mutex_unlock (&readline_mtxpr_yrps);
+} /* end readline_replace_yrps */
 ///// eof readline_yrps.c [€fin du fichier]
