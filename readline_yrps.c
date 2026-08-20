@@ -29,7 +29,8 @@ static pthread_mutex_t readline_mtxpr_yrps =
 
 static char *readline_completion_yrps (const char *, int);
 static char **readline_attempted_completion_yrps (const char *, int, int);
-static void readline_replace_yrps(const char*init, int start, int end, const char*replac);
+static void readline_replace_yrps (const char *init, int start, int end,
+                                   const char *replac);
 
 void
 yrps_init_readline (void)
@@ -38,10 +39,10 @@ yrps_init_readline (void)
   YRPS_UNIQUE_BREAKPOINT ();
   rl_readline_name = "yarefpersys";
   fprintf (stderr, "yrps_init_readline [%s:%d] unimplemented\n",
-	   __FILE__, __LINE__ - 1);
+           __FILE__, __LINE__ - 1);
   rl_completion_entry_function = readline_completion_yrps;
   rl_attempted_completion_function = readline_attempted_completion_yrps;
-}				/* end yrps_init_readline */
+}                               /* end yrps_init_readline */
 
 
 char *
@@ -51,12 +52,12 @@ readline_completion_yrps (const char *str, int key)
     {
       YRPS_UNIQUE_BREAKPOINT ();
     }
-  fputc ('\n', stderr);		/// temporary
+  fputc ('\n', stderr);         /// temporary
   YRPS_UNIQUE_BREAKPOINT ();
   YRPS_PRINTFAIL
     ("readline_completion_yrps str=%s key=%d='%c' linbuf='%s' unimplemented\n",
      str, key, (char) key, rl_line_buffer);
-}				/* end readline_completion_yrps */
+}                               /* end readline_completion_yrps */
 
 
 char **
@@ -67,20 +68,20 @@ readline_attempted_completion_yrps (const char *text, int start, int end)
   if (start > 0 && rl_line_buffer[start - 1] == '\\')
     {
       if (!strcmp (text, "euro"))
-	{
-	  YRPS_UNIQUE_BREAKPOINT();
-	  YRPS_PRINTFAIL ("readline_attempted_completion_yrps € text=%s "
-			  "start=%d end=%d rlbuf=%s\n", text, start, end,
-			  rl_line_buffer);
-	  readline_replace_yrps("\euro", start-1, end, "€");
-	  /// TODO we probably want to complete \eu as €
-	}
+        {
+          YRPS_UNIQUE_BREAKPOINT ();
+          YRPS_PRINTFAIL ("readline_attempted_completion_yrps € text=%s "
+                          "start=%d end=%d rlbuf=%s\n", text, start, end,
+                          rl_line_buffer);
+          readline_replace_yrps ("\euro", start - 1, end, "€");
+          /// TODO we probably want to complete \eu as €
+        }
     }
   YRPS_PRINTFAIL ("readline_attempted_completion_yrps text=%s "
-		  "start=%d end=%d rlbuf=%s\n", text, start, end,
-		  rl_line_buffer);
+                  "start=%d end=%d rlbuf=%s\n", text, start, end,
+                  rl_line_buffer);
   return res;
-}				/* end readline_attempted_completion_yrps */
+}                               /* end readline_attempted_completion_yrps */
 
 void
 yrps_set_readline_prompt (const char *ps)
@@ -110,36 +111,38 @@ yrps_readline_loop (void)
       memcpy (prbuf, readline_prompt_yrps, RL_PROMPTSIZE_YRPS - 1);
       pthread_mutex_unlock (&readline_mtxpr_yrps);
       if (!prbuf[0])
-	break;
+        break;
       r = readline (prbuf);
       if (!r)
-	break;
+        break;
 #warning should parse somehow the read line
       fprintf (stderr, "\n..readline got %s [%s:%d]\n", r, __FILE__,
-	       __LINE__ - 1);
+               __LINE__ - 1);
       free (r);
       r = NULL;
     }
   while (again);
   YRPS_PRINTFAIL ("unimplemented yrps_readline_loop git %s\n",
-		  readline_yrps_id);
+                  readline_yrps_id);
 #warning unimplemented yrps_readline_loop
-}				/* end yrps_readline_loop */
+}                               /* end yrps_readline_loop */
 
 
 void
-readline_replace_yrps(const char*init, int start, int end, const char*replac)
+readline_replace_yrps (const char *init, int start, int end,
+                       const char *replac)
 {
-  char*oldrlbuf = NULL;
-  char*newrlbuf = NULL;
-  assert(init != NULL);
-  assert(replac != NULL);
-  assert(start < end);
+  char *oldrlbuf = NULL;
+  char *newrlbuf = NULL;
+  assert (init != NULL);
+  assert (replac != NULL);
+  assert (start < end);
   pthread_mutex_lock (&readline_mtxpr_yrps);
-  YRPS_PRINTFAIL("unimplemented readline_replace_yrps init=%s start=%d\n"
-		 " end=%d replac=%s rl_line_buffer=%s\n",
-		 init, start, end, replac, rl_line_buffer);
+  YRPS_PRINTFAIL ("unimplemented readline_replace_yrps init=%s start=%d\n"
+                  " end=%d replac=%s rl_line_buffer=%s\n",
+                  init, start, end, replac, rl_line_buffer);
 #warning unimplemented readline_replace_yrps
   pthread_mutex_unlock (&readline_mtxpr_yrps);
-} /* end readline_replace_yrps */
+}                               /* end readline_replace_yrps */
+
 ///// eof readline_yrps.c [€fin du fichier]
