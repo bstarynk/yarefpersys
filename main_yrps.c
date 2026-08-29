@@ -166,7 +166,7 @@ yrps_debug_at (const char *fil, int lin, const char *func, const char *fmt,
   assert (func != NULL);
   assert (fmt != NULL);
   va_start (arg, func);
-  fprintf (stderr, "YRPSDBG %s:%d::%s", basename (fil), lin, func);
+  fprintf (stderr, "YRPSDBG %s:%d::%s ", basename (fil), lin, func);
   vfprintf (stderr, fmt, arg);
   fputc ('\n', stderr);
   fflush (stderr);
