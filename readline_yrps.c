@@ -127,23 +127,23 @@ yrps_readline_loop (void)
 
 
 void
-readline_replace_yrps (const char *init, int start, int end,
+readline_replace_yrps (const char *initr, int startr, int endr,
                        const char *replac)
 {
   char *oldrlbuf = NULL;
   char *newrlbuf = NULL;
-  assert (init != NULL);
+  assert (initr != NULL);
   assert (replac != NULL);
-  assert (start < end);
+  assert (startr < endr);
   pthread_mutex_lock (&readline_mtxpr_yrps);
   assert (rl_line_buffer != NULL);
-  YRPS_DEBUG ("init='%s'@%p rl_line_buffer='%s'@%p",
-	      init, (void*)init,
+  YRPS_DEBUG ("initr='%s'@%p rl_line_buffer='%s'@%p",
+	      initr, (void*)initr,
 	      rl_line_buffer, (void*)rl_line_buffer);
-  assert (init > rl_line_buffer);
+  assert (initr > rl_line_buffer);
   YRPS_PRINTFAIL ("unimplemented readline_replace_yrps init=%s start=%d\n"
                   " end=%d replac=%s rl_line_buffer=%s\n",
-                  init, start, end, replac, rl_line_buffer);
+                  initr, startr, endr, replac, rl_line_buffer);
 #warning unimplemented readline_replace_yrps
   pthread_mutex_unlock (&readline_mtxpr_yrps);
 }                               /* end readline_replace_yrps */
