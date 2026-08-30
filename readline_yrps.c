@@ -137,7 +137,9 @@ readline_replace_yrps (const char *init, int start, int end,
   assert (start < end);
   pthread_mutex_lock (&readline_mtxpr_yrps);
   assert (rl_line_buffer != NULL);
-  YRPS_DEBUG ("init=%s rl_line_buffer=%s", init, rl_line_buffer);
+  YRPS_DEBUG ("init='%s'@%p rl_line_buffer='%s'@%p",
+	      init, (void*)init,
+	      rl_line_buffer, (void*)rl_line_buffer);
   assert (init > rl_line_buffer);
   YRPS_PRINTFAIL ("unimplemented readline_replace_yrps init=%s start=%d\n"
                   " end=%d replac=%s rl_line_buffer=%s\n",
