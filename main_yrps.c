@@ -155,6 +155,24 @@ handle_prog_arguments_yrps (int argc, const char **argv)
     }
 }                               /* end handle_prog_arguments_yrps */
 
+
+void
+yrps_debug_at (const char *fil, int lin, const char *func, const char *fmt,
+               ...)
+{
+  va_list arg;
+  assert (fil != NULL);
+  assert (lin > 0);
+  assert (func != NULL);
+  assert (fmt != NULL);
+  va_start (arg, func);
+  fprintf (stderr, "YRPSDBG %s:%d::%s ", basename (fil), lin, func);
+  vfprintf (stderr, fmt, arg);
+  fputc ('\n', stderr);
+  fflush (stderr);
+  va_end (arg);
+}                               /* end yrps_debug_at */
+
 int
 main (int argc, char **argv)
 {

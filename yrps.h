@@ -96,6 +96,13 @@ void *yrps_malloc_at (unsigned size, const char *fil, int lin);
 void yrps_fail_at (const char *fil, int lin) __attribute__((noreturn));
 #define YRPS_FAIL() yrps_fail_at(__FILE__,__LINE__);
 
+void yrps_debug_at (const char *fil, int lin, const char *func,
+                    const char *fmt, ...)
+  __attribute__((format (printf, 4, 5)));
+#define YRPS_DEBUG(Fmt,...) do { if (yrps_debugging) \
+      yrps_debug_at(__FILE__,__LINE__,__FUNCTION__, \
+		    (Fmt),__VA_ARGS__); } while(0)
+
 #define YRPS_PRINTFAIL(Fmt,...) do {            \
     fputc('\n', stderr);                        \
     fprintf(stderr, Fmt, __VA_ARGS__);          \
