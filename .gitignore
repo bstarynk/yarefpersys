@@ -1,5 +1,9 @@
 #emacs backup (Basile Starynkevitch)
 *~
+
+# generated C files
+_*.[ch]
+
 # Prerequisites
 *.d
 
