@@ -101,7 +101,7 @@ void yrps_debug_at (const char *fil, int lin, const char *func,
   __attribute__((format (printf, 4, 5)));
 #define YRPS_DEBUG(Fmt,...) do { if (yrps_debugging) \
       yrps_debug_at(__FILE__,__LINE__,__FUNCTION__, \
-		    (Fmt),__VA_ARGS__); } while(0)
+		    (Fmt),##__VA_ARGS__); } while(0)
 
 #define YRPS_PRINTFAIL(Fmt,...) do {            \
     fputc('\n', stderr);                        \
